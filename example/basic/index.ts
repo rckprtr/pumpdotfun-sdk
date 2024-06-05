@@ -39,7 +39,6 @@ const main = async () => {
 
   let globalAccount = await sdk.getGlobalAccount();
   console.log(globalAccount);
-  return;
 
 
   let currentSolBalance = await connection.getBalance(testAccount.publicKey);
@@ -82,7 +81,6 @@ const main = async () => {
     printSPLBalance(connection, mint.publicKey, testAccount.publicKey);
   }
 
-
   if(boundingCurveAccount){
     //buy 0.0001 SOL worth of tokens
     let buyResults = await sdk.buy(
@@ -109,7 +107,7 @@ const main = async () => {
       let sellResults = await sdk.sell(
         testAccount,
         mint.publicKey,
-        BigInt(1 * Math.pow(10, DEFAULT_DECIMALS)),
+        BigInt(currentSPLBalance * Math.pow(10, DEFAULT_DECIMALS)),
         SLIPPAGE_BASIS_POINTS,
         {
           unitLimit: 250000,
