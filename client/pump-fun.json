@@ -14,7 +14,21 @@
         {
           "name": "global",
           "writable": true,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "user",
@@ -22,9 +36,8 @@
           "signer": true
         },
         {
-          "name": "systemProgram",
-          "writable": false,
-          "signer": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
@@ -37,7 +50,21 @@
         {
           "name": "global",
           "writable": true,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "user",
@@ -45,19 +72,16 @@
           "signer": true
         },
         {
-          "name": "systemProgram",
-          "writable": false,
-          "signer": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "eventAuthority",
-          "writable": false,
-          "signer": false
+          "name": "event_authority",
+          "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
         },
         {
           "name": "program",
-          "writable": false,
-          "signer": false
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
         }
       ],
       "args": [
@@ -98,29 +122,88 @@
           "signer": true
         },
         {
-          "name": "mintAuthority",
-          "writable": false,
-          "signer": false
+          "name": "mint_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "bondingCurve",
+          "name": "bonding_curve",
           "writable": true,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  99,
+                  117,
+                  114,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
         },
         {
-          "name": "associatedBondingCurve",
+          "name": "associated_bonding_curve",
           "writable": true,
           "signer": false
         },
         {
           "name": "global",
           "writable": false,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "mplTokenMetadata",
-          "writable": false,
-          "signer": false
+          "name": "mpl_token_metadata",
+          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
         },
         {
           "name": "metadata",
@@ -133,34 +216,28 @@
           "isSigner": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
           "name": "rent",
-          "isMut": false,
-          "isSigner": false
+          "address": "SysvarRent111111111111111111111111111111111"
         },
         {
-          "name": "eventAuthority",
-          "isMut": false,
-          "isSigner": false
+          "name": "event_authority",
+          "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
         },
         {
           "name": "program",
-          "isMut": false,
-          "isSigner": false
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
         }
       ],
       "args": [
@@ -185,11 +262,24 @@
       "accounts": [
         {
           "name": "global",
-          "writable": false,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "feeRecipient",
+          "name": "fee_recipient",
           "writable": true,
           "signer": false
         },
@@ -199,17 +289,42 @@
           "signer": false
         },
         {
-          "name": "bondingCurve",
+          "name": "bonding_curve",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  99,
+                  117,
+                  114,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "associated_bonding_curve",
           "writable": true,
           "signer": false
         },
         {
-          "name": "associatedBondingCurve",
-          "writable": true,
-          "signer": false
-        },
-        {
-          "name": "associatedUser",
+          "name": "associated_user",
           "writable": true,
           "signer": false
         },
@@ -219,29 +334,24 @@
           "signer": true
         },
         {
-          "name": "systemProgram",
-          "writable": false,
-          "signer": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "tokenProgram",
-          "writable": false,
-          "signer": false
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "rent",
-          "writable": false,
-          "signer": false
+          "address": "SysvarRent111111111111111111111111111111111"
         },
         {
-          "name": "eventAuthority",
-          "writable": false,
-          "signer": false
+          "name": "event_authority",
+          "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
         },
         {
           "name": "program",
-          "writable": false,
-          "signer": false
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
         }
       ],
       "args": [
@@ -263,7 +373,21 @@
         {
           "name": "global",
           "writable": false,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "feeRecipient",
@@ -276,9 +400,34 @@
           "signer": false
         },
         {
-          "name": "bondingCurve",
+          "name": "bonding_curve",
           "writable": true,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  99,
+                  117,
+                  114,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
         },
         {
           "name": "associatedBondingCurve",
@@ -296,29 +445,24 @@
           "signer": true
         },
         {
-          "name": "systemProgram",
-          "writable": false,
-          "signer": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "associatedTokenProgram",
-          "writable": false,
-          "signer": false
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
-          "name": "tokenProgram",
-          "writable": false,
-          "signer": false
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
-          "name": "eventAuthority",
-          "writable": false,
-          "signer": false
+          "name": "event_authority",
+          "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
         },
         {
           "name": "program",
-          "writable": false,
-          "signer": false
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
         }
       ],
       "args": [
@@ -342,7 +486,21 @@
         {
           "name": "global",
           "writable": false,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "lastWithdraw",
@@ -355,9 +513,34 @@
           "signer": false
         },
         {
-          "name": "bondingCurve",
+          "name": "bonding_curve",
           "writable": true,
-          "signer": false
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  99,
+                  117,
+                  114,
+                  118,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
         },
         {
           "name": "associatedBondingCurve",
@@ -375,29 +558,24 @@
           "signer": true
         },
         {
-          "name": "systemProgram",
-          "writable": false,
-          "signer": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "tokenProgram",
-          "writable": false,
-          "signer": false
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "rent",
-          "writable": false,
-          "signer": false
+          "address": "SysvarRent111111111111111111111111111111111"
         },
         {
-          "name": "eventAuthority",
-          "writable": false,
-          "signer": false
+          "name": "event_authority",
+          "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
         },
         {
           "name": "program",
-          "writable": false,
-          "signer": false
+          "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
         }
       ],
       "args": []

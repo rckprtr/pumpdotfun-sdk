@@ -28,8 +28,6 @@ import {
 } from "./events";
 import { MPL_TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
 import {
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
   getAccount,
   getAssociatedTokenAddress,
@@ -43,17 +41,16 @@ import {
   sendTx,
 } from "./util";
 
-const AUTHORITY = "DCpJReAfonSrgohiQbTmKKbjbqVofspFRHz9yQikzooP";
-const EVENT_AUTHORITY = "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1";
-const FEE_RECIPIENT = "CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM";
-const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
-const SYSVAR_RENT_ADDRESS = "SysvarRent111111111111111111111111111111111";
-const SYSTEM_PROGRAM = "11111111111111111111111111111111";
 
-const GLOBAL_ACCOUNT_SEED = "global";
-const MINT_AUTHORITY_SEED = "mint-authority";
-const BONDING_CURVE_SEED = "bonding-curve";
-const METADATA_SEED = "metadata";
+//devnet fee recipient: 68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg
+//mainnet fee recipien: CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM
+const FEE_RECIPIENT = "CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM"; 
+const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"; 
+
+export const GLOBAL_ACCOUNT_SEED = "global";
+export const MINT_AUTHORITY_SEED = "mint-authority";
+export const BONDING_CURVE_SEED = "bonding-curve";
+export const METADATA_SEED = "metadata";
 
 export const DEFAULT_DECIMALS = 6;
 
@@ -222,23 +219,6 @@ export class PumpFunSDK {
     uri: string,
     mint: Keypair
   ) {
-    const programId = new PublicKey(PROGRAM_ID);
-
-    const [mintAuthorityPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(MINT_AUTHORITY_SEED)],
-      programId
-    );
-
-    const [bondingCurvePDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(BONDING_CURVE_SEED), mint.publicKey.toBuffer()],
-      programId
-    );
-
-    const [globalAccountPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(GLOBAL_ACCOUNT_SEED)],
-      new PublicKey(PROGRAM_ID)
-    );
-
     const mplTokenMetadata = new PublicKey(MPL_TOKEN_METADATA_PROGRAM_ID);
 
     const [metadataPDA] = PublicKey.findProgramAddressSync(
@@ -252,7 +232,7 @@ export class PumpFunSDK {
 
     const associatedBondingCurve = await getAssociatedTokenAddress(
       mint.publicKey,
-      bondingCurvePDA,
+      this.getBondingCurvePDA(mint.publicKey),
       true
     );
 
@@ -260,19 +240,9 @@ export class PumpFunSDK {
       .create(name, symbol, uri)
       .accounts({
         mint: mint.publicKey,
-        mintAuthority: mintAuthorityPDA,
-        bondingCurve: bondingCurvePDA,
         associatedBondingCurve: associatedBondingCurve,
-        global: globalAccountPDA,
-        mplTokenMetadata: mplTokenMetadata,
         metadata: metadataPDA,
         user: creator,
-        systemProgram: new PublicKey(SYSTEM_PROGRAM),
-        tokenProgram: new PublicKey(TOKEN_PROGRAM_ID),
-        associatedTokenProgram: new PublicKey(ASSOCIATED_TOKEN_PROGRAM_ID),
-        rent: new PublicKey(SYSVAR_RENT_ADDRESS),
-        eventAuthority: new PublicKey(EVENT_AUTHORITY),
-        program: new PublicKey(PROGRAM_ID),
       })
       .signers([mint])
       .transaction();
@@ -285,19 +255,9 @@ export class PumpFunSDK {
     amount: bigint,
     solAmount: bigint
   ) {
-    const [bondingCurvePDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(BONDING_CURVE_SEED), mint.toBuffer()],
-      new PublicKey(PROGRAM_ID)
-    );
-
-    const [globalAccountPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(GLOBAL_ACCOUNT_SEED)],
-      new PublicKey(PROGRAM_ID)
-    );
-
     const associatedBondingCurve = await getAssociatedTokenAddress(
       mint,
-      bondingCurvePDA,
+      this.getBondingCurvePDA(mint),
       true
     );
 
@@ -322,19 +282,12 @@ export class PumpFunSDK {
       await this.program.methods
         .buy(new BN(amount.toString()), new BN(solAmount.toString()))
         .accounts({
-          global: globalAccountPDA,
           feeRecipient: new PublicKey(FEE_RECIPIENT),
           mint: mint,
           buyer: buyer,
-          bondingCurve: bondingCurvePDA,
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
           user: buyer,
-          systemProgram: new PublicKey(SYSTEM_PROGRAM),
-          tokenProgram: new PublicKey(TOKEN_PROGRAM_ID),
-          rent: new PublicKey(SYSVAR_RENT_ADDRESS),
-          eventAuthority: new PublicKey(EVENT_AUTHORITY),
-          program: new PublicKey(PROGRAM_ID),
         })
         .transaction()
     );
@@ -349,19 +302,9 @@ export class PumpFunSDK {
     amount: bigint,
     minSolOutput: bigint
   ) {
-    const [bondingCurvePDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(BONDING_CURVE_SEED), mint.toBuffer()],
-      new PublicKey(PROGRAM_ID)
-    );
-
-    const [globalAccountPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(GLOBAL_ACCOUNT_SEED)],
-      new PublicKey(PROGRAM_ID)
-    );
-
     const associatedBondingCurve = await getAssociatedTokenAddress(
       mint,
-      bondingCurvePDA,
+      this.getBondingCurvePDA(mint),
       true
     );
 
@@ -373,19 +316,11 @@ export class PumpFunSDK {
       await this.program.methods
         .sell(new BN(amount.toString()), new BN(minSolOutput.toString()))
         .accounts({
-          global: globalAccountPDA,
           feeRecipient: new PublicKey(FEE_RECIPIENT),
           mint: mint,
-          bondingCurve: bondingCurvePDA,
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
           user: seller,
-          systemProgram: new PublicKey(SYSTEM_PROGRAM),
-          associatedTokenProgram: new PublicKey(ASSOCIATED_TOKEN_PROGRAM_ID),
-          tokenProgram: new PublicKey(TOKEN_PROGRAM_ID),
-          rent: new PublicKey(SYSVAR_RENT_ADDRESS),
-          eventAuthority: new PublicKey(EVENT_AUTHORITY),
-          program: new PublicKey(PROGRAM_ID),
         })
         .transaction()
     );
@@ -397,13 +332,8 @@ export class PumpFunSDK {
     mint: PublicKey,
     commitment: Commitment = DEFAULT_COMMITMENT
   ) {
-    const [bondingCurvePDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(BONDING_CURVE_SEED), mint.toBuffer()],
-      new PublicKey(PROGRAM_ID)
-    );
-
     const tokenAccount = await this.connection.getAccountInfo(
-      bondingCurvePDA,
+      this.getBondingCurvePDA(mint),
       commitment
     );
     if (!tokenAccount) {
@@ -422,9 +352,15 @@ export class PumpFunSDK {
       globalAccountPDA,
       commitment
     );
-    console.log("getGlobalAccount");
 
     return GlobalAccount.fromBuffer(tokenAccount!.data);
+  }
+
+  getBondingCurvePDA(mint: PublicKey) {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(BONDING_CURVE_SEED), mint.toBuffer()],
+      this.program.programId
+    )[0];
   }
 
   async createTokenMetadata(create: CreateTokenMetadata) {

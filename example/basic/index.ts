@@ -3,7 +3,6 @@ import {
   Connection,
   Keypair,
   LAMPORTS_PER_SOL,
-  PublicKey,
 } from "@solana/web3.js";
 import { DEFAULT_DECIMALS, PumpFunSDK } from "../../client";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
@@ -16,8 +15,18 @@ const SLIPPAGE_BASIS_POINTS = 100n;
 //create token example:
 //https://solscan.io/tx/bok9NgPeoJPtYQHoDqJZyRDmY88tHbPcAk1CJJsKV3XEhHpaTZhUCG3mA9EQNXcaUfNSgfPkuVbEsKMp6H7D9NY
 
+//devnet faucet
+//https://faucet.solana.com/
+
 const main = async () => {
   dotenv.config();
+
+  if(!process.env.HELIUS_RPC_URL){
+    console.error("Please set HELIUS_RPC_URL in .env file");
+    console.error("Example: HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=<your api key>");
+    console.error("Get one at: https://www.helius.dev");
+    return;
+  }
 
   let connection = new Connection(process.env.HELIUS_RPC_URL || "");
 
