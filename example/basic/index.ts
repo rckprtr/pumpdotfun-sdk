@@ -15,7 +15,6 @@ const SLIPPAGE_BASIS_POINTS = 100n;
 
 //create token example:
 //https://solscan.io/tx/bok9NgPeoJPtYQHoDqJZyRDmY88tHbPcAk1CJJsKV3XEhHpaTZhUCG3mA9EQNXcaUfNSgfPkuVbEsKMp6H7D9NY
-
 //devnet faucet
 //https://faucet.solana.com/
 

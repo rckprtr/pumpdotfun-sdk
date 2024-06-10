@@ -43,7 +43,7 @@ import { PumpFun, IDL } from "./IDL";
 
 //devnet fee recipient: 68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg
 //mainnet fee recipien: CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM
-const FEE_RECIPIENT = "68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg";
+const FEE_RECIPIENT = "CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM";
 const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 
 export const GLOBAL_ACCOUNT_SEED = "global";
