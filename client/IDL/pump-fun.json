@@ -583,16 +583,30 @@
   ],
   "accounts": [
     {
-      "name": "Global",
-      "discriminator": [167, 232, 232, 177, 200, 108, 114, 127]
-    },
-    {
-      "name": "LastWithdraw",
-      "discriminator": [203, 18, 220, 103, 120, 145, 187, 2]
-    },
-    {
       "name": "BondingCurve",
-      "discriminator": [23, 183, 248, 55, 96, 216, 172, 96]
+      "discriminator": [
+        23,
+        183,
+        248,
+        55,
+        96,
+        216,
+        172,
+        96
+      ]
+    },
+    {
+      "name": "Global",
+      "discriminator": [
+        167,
+        232,
+        232,
+        177,
+        200,
+        108,
+        114,
+        127
+      ]
     }
   ],
   "events": [

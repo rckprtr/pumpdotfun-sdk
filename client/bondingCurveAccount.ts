@@ -90,7 +90,7 @@ export class BondingCurveAccount {
       BigInt(value.virtualSolReserves),
       BigInt(value.realTokenReserves),
       BigInt(value.realSolReserves),
-      value.tokenTotalSupply,
+      BigInt(value.tokenTotalSupply),
       value.complete
     );
   }

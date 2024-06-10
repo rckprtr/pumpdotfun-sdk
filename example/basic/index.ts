@@ -1,13 +1,14 @@
 import dotenv from "dotenv";
-import {
-  Connection,
-  Keypair,
-  LAMPORTS_PER_SOL,
-} from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { DEFAULT_DECIMALS, PumpFunSDK } from "../../client";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { getOrCreateKeypair, getSPLBalance, printSOLBalance, printSPLBalance } from "../util";
+import {
+  getOrCreateKeypair,
+  getSPLBalance,
+  printSOLBalance,
+  printSPLBalance,
+} from "../util";
 
 const KEYS_FOLDER = __dirname + "/.keys";
 const SLIPPAGE_BASIS_POINTS = 100n;
@@ -21,9 +22,11 @@ const SLIPPAGE_BASIS_POINTS = 100n;
 const main = async () => {
   dotenv.config();
 
-  if(!process.env.HELIUS_RPC_URL){
+  if (!process.env.HELIUS_RPC_URL) {
     console.error("Please set HELIUS_RPC_URL in .env file");
-    console.error("Example: HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=<your api key>");
+    console.error(
+      "Example: HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=<your api key>"
+    );
     console.error("Get one at: https://www.helius.dev");
     return;
   }
@@ -49,20 +52,24 @@ const main = async () => {
   let globalAccount = await sdk.getGlobalAccount();
   console.log(globalAccount);
 
-
   let currentSolBalance = await connection.getBalance(testAccount.publicKey);
-  if(currentSolBalance == 0){
-    console.log("Please send some SOL to the test-account:", testAccount.publicKey.toBase58());
+  if (currentSolBalance == 0) {
+    console.log(
+      "Please send some SOL to the test-account:",
+      testAccount.publicKey.toBase58()
+    );
     return;
   }
+
+  console.log(await sdk.getGlobalAccount());
 
   //Check if mint already exists
   let boundingCurveAccount = await sdk.getBondingCurveAccount(mint.publicKey);
   if (!boundingCurveAccount) {
     let tokenMetadata = {
-      name: "TST-6",
-      symbol: "TST-6",
-      description: "TST-6: This is a test token",
+      name: "TST-7",
+      symbol: "TST-7",
+      description: "TST-7: This is a test token",
       filePath: "example/basic/random.png",
     };
 
@@ -90,7 +97,7 @@ const main = async () => {
     printSPLBalance(connection, mint.publicKey, testAccount.publicKey);
   }
 
-  if(boundingCurveAccount){
+  if (boundingCurveAccount) {
     //buy 0.0001 SOL worth of tokens
     let buyResults = await sdk.buy(
       testAccount,
@@ -110,9 +117,13 @@ const main = async () => {
     }
 
     //sell all tokens
-    let currentSPLBalance = await getSPLBalance(connection, mint.publicKey, testAccount.publicKey);
+    let currentSPLBalance = await getSPLBalance(
+      connection,
+      mint.publicKey,
+      testAccount.publicKey
+    );
     console.log("currentSPLBalance", currentSPLBalance);
-    if(currentSPLBalance) {
+    if (currentSPLBalance) {
       let sellResults = await sdk.sell(
         testAccount,
         mint.publicKey,
@@ -129,14 +140,13 @@ const main = async () => {
           testAccount.publicKey,
           "Test Account keypair"
         );
-      
-        printSPLBalance(connection, mint.publicKey, testAccount.publicKey);
+
+        printSPLBalance(connection, mint.publicKey, testAccount.publicKey, "After SPL sell all");
       } else {
         console.log("Sell failed");
       }
     }
   }
 };
-
 
 main();

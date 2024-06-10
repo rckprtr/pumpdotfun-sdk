@@ -6,8 +6,7 @@ import {
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
-import idl from "./pump-fun.json";
-import { Idl, Program, Provider } from "@coral-xyz/anchor";
+import { Program, Provider } from "@coral-xyz/anchor";
 import { GlobalAccount } from "./globalAccount";
 import {
   CompleteEvent,
@@ -40,12 +39,12 @@ import {
   calculateWithSlippageSell,
   sendTx,
 } from "./util";
-
+import { PumpFun, IDL } from "./IDL";
 
 //devnet fee recipient: 68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg
 //mainnet fee recipien: CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM
-const FEE_RECIPIENT = "CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM"; 
-const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"; 
+const FEE_RECIPIENT = "68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg";
+const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 
 export const GLOBAL_ACCOUNT_SEED = "global";
 export const MINT_AUTHORITY_SEED = "mint-authority";
@@ -57,10 +56,10 @@ export const DEFAULT_DECIMALS = 6;
 const DEFAULT_COMMITMENT: Commitment = "finalized";
 
 export class PumpFunSDK {
-  public program: Program<Idl>;
+  public program: Program<PumpFun>;
   public connection: Connection;
   constructor(provider?: Provider) {
-    this.program = new Program(idl as Idl, provider);
+    this.program = new Program<PumpFun>(IDL as PumpFun, provider);
     this.connection = this.program.provider.connection;
   }
 
@@ -141,7 +140,7 @@ export class PumpFunSDK {
     console.log(
       `buying ${Number(buyAmount) / 10 ** DEFAULT_DECIMALS} for: ${
         Number(buyAmountWithSlippage) / LAMPORTS_PER_SOL
-      } SOL`
+      } SOL (${Number(buyAmountWithSlippage)})`
     );
 
     let buyTx = await this.getBuyInstructions(
@@ -284,7 +283,6 @@ export class PumpFunSDK {
         .accounts({
           feeRecipient: new PublicKey(FEE_RECIPIENT),
           mint: mint,
-          buyer: buyer,
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
           user: buyer,

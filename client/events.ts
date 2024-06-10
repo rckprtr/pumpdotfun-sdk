@@ -28,7 +28,7 @@ export function toTradeEvent(event: TradeEvent): TradeEvent {
     tokenAmount: BigInt(event.tokenAmount),
     isBuy: event.isBuy,
     user: new PublicKey(event.user),
-    timestamp: event.timestamp,
+    timestamp: Number(event.timestamp),
     virtualSolReserves: BigInt(event.virtualSolReserves),
     virtualTokenReserves: BigInt(event.virtualTokenReserves),
     realSolReserves: BigInt(event.realSolReserves),

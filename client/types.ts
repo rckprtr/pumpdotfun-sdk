@@ -72,7 +72,6 @@ export type PriorityFee = {
   unitPrice: number;
 };
 
-
 export type TransactionResult = {
     signature?: string;
     error?: unknown;
