@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import { struct, bool, u8, u64, publicKey, Layout } from "@coral-xyz/borsh";
+import { struct, bool, u64, publicKey, Layout } from "@coral-xyz/borsh";
 
 export class GlobalAccount {
   public discriminator: bigint;
@@ -43,7 +43,9 @@ export class GlobalAccount {
     let i = this.initialVirtualSolReserves + amount;
     let r = n / i + 1n;
     let s = this.initialVirtualTokenReserves - r;
-    return s < this.initialRealTokenReserves ? s : this.initialRealTokenReserves;
+    return s < this.initialRealTokenReserves
+      ? s
+      : this.initialRealTokenReserves;
   }
 
   public static fromBuffer(buffer: Buffer): GlobalAccount {

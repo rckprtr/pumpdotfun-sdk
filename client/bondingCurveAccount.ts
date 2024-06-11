@@ -72,6 +72,17 @@ export class BondingCurveAccount {
     return n - a;
   }
 
+  getMarketCapSOL(): bigint {
+    if (this.virtualTokenReserves === 0n) {
+      return 0n;
+    }
+
+    return (
+      (this.tokenTotalSupply * this.virtualSolReserves) /
+      this.virtualTokenReserves
+    );
+  }
+
   public static fromBuffer(buffer: Buffer): BondingCurveAccount {
     const structure: Layout<BondingCurveAccount> = struct([
       u64("discriminator"),

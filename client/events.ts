@@ -1,5 +1,10 @@
 import { PublicKey } from "@solana/web3.js";
-import { CompleteEvent, CreateEvent, SetParamsEvent, TradeEvent } from "./types";
+import {
+  CompleteEvent,
+  CreateEvent,
+  SetParamsEvent,
+  TradeEvent,
+} from "./types";
 
 export function toCreateEvent(event: CreateEvent): CreateEvent {
   return {
@@ -33,7 +38,7 @@ export function toTradeEvent(event: TradeEvent): TradeEvent {
     virtualTokenReserves: BigInt(event.virtualTokenReserves),
     realSolReserves: BigInt(event.realSolReserves),
     realTokenReserves: BigInt(event.realTokenReserves),
-  }
+  };
 }
 
 export function toSetParamsEvent(event: SetParamsEvent): SetParamsEvent {
@@ -44,5 +49,5 @@ export function toSetParamsEvent(event: SetParamsEvent): SetParamsEvent {
     initialRealTokenReserves: BigInt(event.initialRealTokenReserves),
     tokenTotalSupply: BigInt(event.tokenTotalSupply),
     feeBasisPoints: BigInt(event.feeBasisPoints),
-  }
+  };
 }

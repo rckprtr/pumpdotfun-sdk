@@ -73,8 +73,8 @@ export type PriorityFee = {
 };
 
 export type TransactionResult = {
-    signature?: string;
-    error?: unknown;
-    results?: VersionedTransactionResponse;
-    success: boolean;
+  signature?: string;
+  error?: unknown;
+  results?: VersionedTransactionResponse;
+  success: boolean;
 };
