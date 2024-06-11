@@ -7,7 +7,7 @@ The `PumpFunSDK` is a TypeScript class designed to interact with the Pump.fun de
 ## Installation
 
 `
-npm i
+npm i pumpdotfun-sdk
 `
 
 ## Usage Example
