@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { DEFAULT_DECIMALS, PumpFunSDK } from "../../client";
+import { DEFAULT_DECIMALS, PumpFunSDK } from "../../src";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import {

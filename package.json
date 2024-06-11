@@ -1,11 +1,25 @@
 {
-  "name": "pump-fun-sdk",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "pumpdotfun-sdk",
+  "version": "1.0.2",
+  "description": "A simple SDK for interacting with pumpdotfun",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rckprtr/pumpdotfun-sdk.git"
+  },
+  "keywords": [
+    "pumpdotfun",
+    "sdk",
+    "solana"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {

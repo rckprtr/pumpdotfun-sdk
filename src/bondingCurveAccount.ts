@@ -83,6 +83,32 @@ export class BondingCurveAccount {
     );
   }
 
+  getFinalMarketCapSOL(feeBasisPoints: bigint): bigint {
+    let totalSellValue = this.getBuyOutPrice(
+      this.realTokenReserves,
+      feeBasisPoints
+    );
+    let totalVirtualValue = this.virtualSolReserves + totalSellValue;
+    let totalVirtualTokens = this.virtualTokenReserves - this.realTokenReserves;
+
+    if (totalVirtualTokens === 0n) {
+      return 0n;
+    }
+
+    return (this.tokenTotalSupply * totalVirtualValue) / totalVirtualTokens;
+  }
+
+  getBuyOutPrice(amount: bigint, feeBasisPoints: bigint): bigint {
+    let solTokens =
+      amount < this.realSolReserves ? this.realSolReserves : amount;
+    let totalSellValue =
+      (solTokens * this.virtualSolReserves) /
+        (this.virtualTokenReserves - solTokens) +
+      1n;
+    let fee = (totalSellValue * feeBasisPoints) / 10000n;
+    return totalSellValue + fee;
+  }
+
   public static fromBuffer(buffer: Buffer): BondingCurveAccount {
     const structure: Layout<BondingCurveAccount> = struct([
       u64("discriminator"),
