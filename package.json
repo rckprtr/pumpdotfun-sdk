@@ -1,6 +1,6 @@
 {
   "name": "pumpdotfun-sdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple SDK for interacting with pumpdotfun",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
