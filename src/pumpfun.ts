@@ -25,7 +25,6 @@ import {
   toSetParamsEvent,
   toTradeEvent,
 } from "./events";
-import { MPL_TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
 import {
   createAssociatedTokenAccountInstruction,
   getAccount,
@@ -45,6 +44,7 @@ import { PumpFun, IDL } from "./IDL";
 //mainnet fee recipien: CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM
 const FEE_RECIPIENT = "68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg";
 const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
+const MPL_TOKEN_METADATA_PROGRAM_ID = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
 
 export const GLOBAL_ACCOUNT_SEED = "global";
 export const MINT_AUTHORITY_SEED = "mint-authority";

@@ -1,6 +1,6 @@
 {
   "name": "pumpdotfun-sdk",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A simple SDK for interacting with pumpdotfun",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.0",
-    "@metaplex-foundation/mpl-token-metadata": "^3.2.1",
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.92.1"
   }
