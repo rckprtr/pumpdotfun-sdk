@@ -81,7 +81,7 @@ const main = async () => {
       {
         unitLimit: 250000,
         unitPrice: 250000,
-      }
+      },
     );
 
     if (createResults.success) {
@@ -106,7 +106,7 @@ const main = async () => {
       {
         unitLimit: 250000,
         unitPrice: 250000,
-      }
+      },
     );
 
     if (buyResults.success) {
@@ -131,7 +131,7 @@ const main = async () => {
         {
           unitLimit: 250000,
           unitPrice: 250000,
-        }
+        },
       );
       if (sellResults.success) {
         await printSOLBalance(

@@ -1,6 +1,8 @@
 import {
+  Commitment,
   ComputeBudgetProgram,
   Connection,
+  Finality,
   Keypair,
   PublicKey,
   SendTransactionError,
@@ -10,6 +12,9 @@ import {
   VersionedTransactionResponse,
 } from "@solana/web3.js";
 import { PriorityFee, TransactionResult } from "./types";
+
+export const DEFAULT_COMMITMENT: Commitment = "finalized";
+export const DEFAULT_FINALITY: Finality = "finalized";
 
 export const calculateWithSlippageBuy = (
   amount: bigint,
@@ -30,7 +35,9 @@ export async function sendTx(
   tx: Transaction,
   payer: PublicKey,
   signers: Keypair[],
-  priorityFees?: PriorityFee
+  priorityFees?: PriorityFee,
+  commitment: Commitment = DEFAULT_COMMITMENT,
+  finality: Finality = DEFAULT_FINALITY
 ): Promise<TransactionResult> {
   let newTx = new Transaction();
 
@@ -48,7 +55,7 @@ export async function sendTx(
 
   newTx.add(tx);
 
-  let versionedTx = await buildVersionedTx(connection, payer, newTx);
+  let versionedTx = await buildVersionedTx(connection, payer, newTx, commitment);
   versionedTx.sign(signers);
 
   try {
@@ -57,7 +64,7 @@ export async function sendTx(
     });
     console.log("sig:", `https://solscan.io/tx/${sig}`);
 
-    let txResult = await getTxDetails(connection, sig);
+    let txResult = await getTxDetails(connection, sig, commitment, finality);
     if (!txResult) {
       return {
         success: false,
@@ -86,9 +93,10 @@ export async function sendTx(
 export const buildVersionedTx = async (
   connection: Connection,
   payer: PublicKey,
-  tx: Transaction
+  tx: Transaction,
+  commitment: Commitment = DEFAULT_COMMITMENT
 ): Promise<VersionedTransaction> => {
-  const blockHash = (await connection.getLatestBlockhash("finalized"))
+  const blockHash = (await connection.getLatestBlockhash(commitment))
     .blockhash;
 
   let messageV0 = new TransactionMessage({
@@ -102,7 +110,9 @@ export const buildVersionedTx = async (
 
 export const getTxDetails = async (
   connection: Connection,
-  sig: string
+  sig: string,
+  commitment: Commitment = DEFAULT_COMMITMENT,
+  finality: Finality = DEFAULT_FINALITY
 ): Promise<VersionedTransactionResponse | null> => {
   const latestBlockHash = await connection.getLatestBlockhash();
   await connection.confirmTransaction(
@@ -111,11 +121,11 @@ export const getTxDetails = async (
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       signature: sig,
     },
-    "finalized"
+    commitment
   );
 
   return connection.getTransaction(sig, {
     maxSupportedTransactionVersion: 0,
-    commitment: "finalized",
+    commitment: finality,
   });
 };

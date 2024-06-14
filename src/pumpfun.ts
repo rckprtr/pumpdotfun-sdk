@@ -1,6 +1,7 @@
 import {
   Commitment,
   Connection,
+  Finality,
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
@@ -34,6 +35,8 @@ import { BondingCurveAccount } from "./bondingCurveAccount";
 import { openAsBlob } from "node:fs";
 import { BN } from "bn.js";
 import {
+  DEFAULT_COMMITMENT,
+  DEFAULT_FINALITY,
   calculateWithSlippageBuy,
   calculateWithSlippageSell,
   sendTx,
@@ -53,8 +56,6 @@ export const METADATA_SEED = "metadata";
 
 export const DEFAULT_DECIMALS = 6;
 
-const DEFAULT_COMMITMENT: Commitment = "finalized";
-
 export class PumpFunSDK {
   public program: Program<PumpFun>;
   public connection: Connection;
@@ -69,7 +70,9 @@ export class PumpFunSDK {
     createTokenMetadata: CreateTokenMetadata,
     buyAmountSol: bigint,
     slippageBasisPoints: bigint = 500n,
-    priorityFees?: PriorityFee
+    priorityFees?: PriorityFee,
+    commitment: Commitment = DEFAULT_COMMITMENT,
+    finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
     let globalAccount = await this.getGlobalAccount();
 
@@ -112,7 +115,9 @@ export class PumpFunSDK {
       newTx,
       creator.publicKey,
       [creator, mint],
-      priorityFees
+      priorityFees,
+      commitment,
+      finality
     );
     return createResults;
   }
@@ -122,9 +127,11 @@ export class PumpFunSDK {
     mint: PublicKey,
     buyAmountSol: bigint,
     slippageBasisPoints: bigint = 500n,
-    priorityFees?: PriorityFee
+    priorityFees?: PriorityFee,
+    commitment: Commitment = DEFAULT_COMMITMENT,
+    finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
-    let bondingCurveAccount = await this.getBondingCurveAccount(mint);
+    let bondingCurveAccount = await this.getBondingCurveAccount(mint, commitment);
     if (!bondingCurveAccount) {
       return {
         success: false,
@@ -155,7 +162,9 @@ export class PumpFunSDK {
       buyTx,
       buyer.publicKey,
       [buyer],
-      priorityFees
+      priorityFees,
+      commitment,
+      finality
     );
     return buyResults;
   }
@@ -165,7 +174,9 @@ export class PumpFunSDK {
     mint: PublicKey,
     sellAmount: bigint,
     slippageBasisPoints: bigint = 500n,
-    priorityFees?: PriorityFee
+    priorityFees?: PriorityFee,
+    commitment: Commitment = DEFAULT_COMMITMENT,
+    finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
     let bondingCurveAccount = await this.getBondingCurveAccount(mint);
     if (!bondingCurveAccount) {
@@ -205,7 +216,9 @@ export class PumpFunSDK {
       sellTx,
       seller.publicKey,
       [seller],
-      priorityFees
+      priorityFees,
+      commitment,
+      finality
     );
     return sellResults;
   }
@@ -252,7 +265,8 @@ export class PumpFunSDK {
     buyer: PublicKey,
     mint: PublicKey,
     amount: bigint,
-    solAmount: bigint
+    solAmount: bigint,
+    commitment: Commitment = DEFAULT_COMMITMENT
   ) {
     const associatedBondingCurve = await getAssociatedTokenAddress(
       mint,
@@ -265,7 +279,7 @@ export class PumpFunSDK {
     let transaction = new Transaction();
 
     try {
-      await getAccount(this.connection, associatedUser, "confirmed");
+      await getAccount(this.connection, associatedUser, commitment);
     } catch (e) {
       transaction.add(
         createAssociatedTokenAccountInstruction(
