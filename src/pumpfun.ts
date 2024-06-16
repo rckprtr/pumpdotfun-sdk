@@ -42,10 +42,7 @@ import {
   sendTx,
 } from "./util";
 import { PumpFun, IDL } from "./IDL";
-
-//devnet fee recipient: 68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg
-//mainnet fee recipien: CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM
-const FEE_RECIPIENT = "68yFSZxzLWJXkxxRGydZ63C6mHx1NLEDWmwN9Lb5yySg";
+;
 const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 const MPL_TOKEN_METADATA_PROGRAM_ID = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
 
@@ -74,7 +71,7 @@ export class PumpFunSDK {
     commitment: Commitment = DEFAULT_COMMITMENT,
     finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
-    let globalAccount = await this.getGlobalAccount();
+    let globalAccount = await this.getGlobalAccount(commitment);
 
     let tokenMetadata = await this.createTokenMetadata(createTokenMetadata);
     console.log(tokenMetadata);
@@ -104,6 +101,7 @@ export class PumpFunSDK {
       let buyTx = await this.getBuyInstructions(
         creator.publicKey,
         mint.publicKey,
+        globalAccount.feeRecipient,
         buyAmount,
         buyAmountWithSlippage
       );
@@ -150,9 +148,12 @@ export class PumpFunSDK {
       } SOL (${Number(buyAmountWithSlippage)})`
     );
 
+    let globalAccount = await this.getGlobalAccount(commitment);
+
     let buyTx = await this.getBuyInstructions(
       buyer.publicKey,
       mint,
+      globalAccount.feeRecipient,
       buyAmount,
       buyAmountWithSlippage
     );
@@ -207,6 +208,7 @@ export class PumpFunSDK {
     let sellTx = await this.getSellInstructions(
       seller.publicKey,
       mint,
+      globalAccount.feeRecipient,
       sellAmount,
       sellAmountWithSlippage
     );
@@ -264,6 +266,7 @@ export class PumpFunSDK {
   async getBuyInstructions(
     buyer: PublicKey,
     mint: PublicKey,
+    feeRecipient: PublicKey,
     amount: bigint,
     solAmount: bigint,
     commitment: Commitment = DEFAULT_COMMITMENT
@@ -291,11 +294,12 @@ export class PumpFunSDK {
       );
     }
 
+
     transaction.add(
       await this.program.methods
         .buy(new BN(amount.toString()), new BN(solAmount.toString()))
         .accounts({
-          feeRecipient: new PublicKey(FEE_RECIPIENT),
+          feeRecipient: feeRecipient,
           mint: mint,
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
@@ -311,6 +315,7 @@ export class PumpFunSDK {
   async getSellInstructions(
     seller: PublicKey,
     mint: PublicKey,
+    feeRecipient: PublicKey,
     amount: bigint,
     minSolOutput: bigint
   ) {
@@ -328,7 +333,7 @@ export class PumpFunSDK {
       await this.program.methods
         .sell(new BN(amount.toString()), new BN(minSolOutput.toString()))
         .accounts({
-          feeRecipient: new PublicKey(FEE_RECIPIENT),
+          feeRecipient: feeRecipient,
           mint: mint,
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
