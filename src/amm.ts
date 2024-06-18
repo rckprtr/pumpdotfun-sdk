@@ -41,15 +41,10 @@ export class AMM {
     }
 
     getBuyPrice(tokens: bigint): bigint {
-        if (tokens <= 0n) {
-            return 0n;
-        }
-
         const product_of_reserves = this.virtualSolReserves * this.virtualTokenReserves;
         const new_virtual_token_reserves = this.virtualTokenReserves - tokens;
         const new_virtual_sol_reserves = product_of_reserves / new_virtual_token_reserves + 1n;
         const amount_needed = new_virtual_sol_reserves > this.virtualSolReserves ? new_virtual_sol_reserves - this.virtualSolReserves : 0n;
-
         return amount_needed > 0n ? amount_needed : 0n;
     }
 
@@ -85,14 +80,9 @@ export class AMM {
     }
 
     getSellPrice(tokens: bigint): bigint {
-        if (tokens <= 0n) {
-            return 0n;
-        }
-
         const scaling_factor = this.initialVirtualTokenReserves;
         const token_sell_proportion = (tokens * scaling_factor) / this.virtualTokenReserves;
         const sol_received = (this.virtualSolReserves * token_sell_proportion) / scaling_factor;
-
         return sol_received < this.realSolReserves ? sol_received : this.realSolReserves;
     }
 }
