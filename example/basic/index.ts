@@ -87,7 +87,7 @@ const main = async () => {
     if (createResults.success) {
       console.log("Success:", `https://pump.fun/${mint.publicKey.toBase58()}`);
       boundingCurveAccount = await sdk.getBondingCurveAccount(mint.publicKey);
-      console.log("boundingCurveAccount", boundingCurveAccount);
+      console.log("Bonding curve after create and buy", boundingCurveAccount);
       printSPLBalance(connection, mint.publicKey, testAccount.publicKey);
     }
   } else {
@@ -111,6 +111,7 @@ const main = async () => {
 
     if (buyResults.success) {
       printSPLBalance(connection, mint.publicKey, testAccount.publicKey);
+      console.log("Bonding curve after buy", await sdk.getBondingCurveAccount(mint.publicKey));
     } else {
       console.log("Buy failed");
     }
@@ -141,6 +142,7 @@ const main = async () => {
         );
 
         printSPLBalance(connection, mint.publicKey, testAccount.publicKey, "After SPL sell all");
+        console.log("Bonding curve after sell", await sdk.getBondingCurveAccount(mint.publicKey));
       } else {
         console.log("Sell failed");
       }
