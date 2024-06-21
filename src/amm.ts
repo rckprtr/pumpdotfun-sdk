@@ -50,10 +50,10 @@ export class AMM {
 
     applyBuy(token_amount: bigint): BuyResult {
         const final_token_amount = token_amount > this.realTokenReserves ? this.realTokenReserves : token_amount;
-        const sol_amount = this.getBuyPrice(token_amount);
+        const sol_amount = this.getBuyPrice(final_token_amount);
 
-        this.virtualTokenReserves = this.virtualTokenReserves - token_amount;
-        this.realTokenReserves = this.realTokenReserves - token_amount;
+        this.virtualTokenReserves = this.virtualTokenReserves - final_token_amount;
+        this.realTokenReserves = this.realTokenReserves - final_token_amount;
 
         this.virtualSolReserves = this.virtualSolReserves + sol_amount;
         this.realSolReserves = this.realSolReserves + sol_amount;
