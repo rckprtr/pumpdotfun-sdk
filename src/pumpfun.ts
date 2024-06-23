@@ -42,9 +42,9 @@ import {
   sendTx,
 } from "./util";
 import { PumpFun, IDL } from "./IDL";
-;
 const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
-const MPL_TOKEN_METADATA_PROGRAM_ID = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
+const MPL_TOKEN_METADATA_PROGRAM_ID =
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
 
 export const GLOBAL_ACCOUNT_SEED = "global";
 export const MINT_AUTHORITY_SEED = "mint-authority";
@@ -71,10 +71,7 @@ export class PumpFunSDK {
     commitment: Commitment = DEFAULT_COMMITMENT,
     finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
-    let globalAccount = await this.getGlobalAccount(commitment);
-
     let tokenMetadata = await this.createTokenMetadata(createTokenMetadata);
-    console.log(tokenMetadata);
 
     let createTx = await this.getCreateInstructions(
       creator.publicKey,
@@ -87,24 +84,21 @@ export class PumpFunSDK {
     let newTx = new Transaction().add(createTx);
 
     if (buyAmountSol > 0) {
+      const globalAccount = await this.getGlobalAccount(commitment);
       const buyAmount = globalAccount.getInitialBuyPrice(buyAmountSol);
       const buyAmountWithSlippage = calculateWithSlippageBuy(
         buyAmountSol,
         slippageBasisPoints
       );
-      console.log(
-        `buying $${createTokenMetadata.symbol}: ${
-          Number(buyAmount) / 10 ** DEFAULT_DECIMALS
-        } for: ${Number(buyAmountWithSlippage) / Number(LAMPORTS_PER_SOL)} SOL`
-      );
 
-      let buyTx = await this.getBuyInstructions(
+      const buyTx = await this.getBuyInstructions(
         creator.publicKey,
         mint.publicKey,
         globalAccount.feeRecipient,
         buyAmount,
         buyAmountWithSlippage
       );
+
       newTx.add(buyTx);
     }
 
@@ -129,33 +123,12 @@ export class PumpFunSDK {
     commitment: Commitment = DEFAULT_COMMITMENT,
     finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
-    let bondingCurveAccount = await this.getBondingCurveAccount(mint, commitment);
-    if (!bondingCurveAccount) {
-      return {
-        success: false,
-        error: "Bonding curve account not found",
-      };
-    }
-    let buyAmount = bondingCurveAccount.getBuyPrice(buyAmountSol);
-    let buyAmountWithSlippage = calculateWithSlippageBuy(
-      buyAmountSol,
-      slippageBasisPoints
-    );
-
-    console.log(
-      `buying ${Number(buyAmount) / 10 ** DEFAULT_DECIMALS} for: ${
-        Number(buyAmountWithSlippage) / LAMPORTS_PER_SOL
-      } SOL (${Number(buyAmountWithSlippage)})`
-    );
-
-    let globalAccount = await this.getGlobalAccount(commitment);
-
-    let buyTx = await this.getBuyInstructions(
+    let buyTx = await this.getBuyInstructionsBySolAmount(
       buyer.publicKey,
       mint,
-      globalAccount.feeRecipient,
-      buyAmount,
-      buyAmountWithSlippage
+      buyAmountSol,
+      slippageBasisPoints,
+      commitment
     );
 
     let buyResults = await sendTx(
@@ -173,44 +146,18 @@ export class PumpFunSDK {
   async sell(
     seller: Keypair,
     mint: PublicKey,
-    sellAmount: bigint,
+    sellTokenAmount: bigint,
     slippageBasisPoints: bigint = 500n,
     priorityFees?: PriorityFee,
     commitment: Commitment = DEFAULT_COMMITMENT,
     finality: Finality = DEFAULT_FINALITY
   ): Promise<TransactionResult> {
-    let bondingCurveAccount = await this.getBondingCurveAccount(mint);
-    if (!bondingCurveAccount) {
-      return {
-        success: false,
-        error: "Bonding curve account not found",
-      };
-    }
-
-    let globalAccount = await this.getGlobalAccount();
-
-    let minSolOutput = bondingCurveAccount.getSellPrice(
-      sellAmount,
-      globalAccount.feeBasisPoints
-    );
-
-    let sellAmountWithSlippage = calculateWithSlippageSell(
-      minSolOutput,
-      slippageBasisPoints
-    );
-
-    console.log(
-      `selling ${Number(sellAmount) / 10 ** DEFAULT_DECIMALS} for: ${
-        Number(sellAmountWithSlippage) / LAMPORTS_PER_SOL
-      } SOL`
-    );
-
-    let sellTx = await this.getSellInstructions(
+    let sellTx = await this.getSellInstructionsByTokenAmount(
       seller.publicKey,
       mint,
-      globalAccount.feeRecipient,
-      sellAmount,
-      sellAmountWithSlippage
+      sellTokenAmount,
+      slippageBasisPoints,
+      commitment
     );
 
     let sellResults = await sendTx(
@@ -262,6 +209,38 @@ export class PumpFunSDK {
       .transaction();
   }
 
+  async getBuyInstructionsBySolAmount(
+    buyer: PublicKey,
+    mint: PublicKey,
+    buyAmountSol: bigint,
+    slippageBasisPoints: bigint = 500n,
+    commitment: Commitment = DEFAULT_COMMITMENT
+  ) {
+    let bondingCurveAccount = await this.getBondingCurveAccount(
+      mint,
+      commitment
+    );
+    if (!bondingCurveAccount) {
+      throw new Error(`Bonding curve account not found: ${mint.toBase58()}`);
+    }
+
+    let buyAmount = bondingCurveAccount.getBuyPrice(buyAmountSol);
+    let buyAmountWithSlippage = calculateWithSlippageBuy(
+      buyAmountSol,
+      slippageBasisPoints
+    );
+
+    let globalAccount = await this.getGlobalAccount(commitment);
+
+    return await this.getBuyInstructions(
+      buyer,
+      mint,
+      globalAccount.feeRecipient,
+      buyAmount,
+      buyAmountWithSlippage
+    );
+  }
+
   //buy
   async getBuyInstructions(
     buyer: PublicKey,
@@ -294,7 +273,6 @@ export class PumpFunSDK {
       );
     }
 
-
     transaction.add(
       await this.program.methods
         .buy(new BN(amount.toString()), new BN(solAmount.toString()))
@@ -312,6 +290,42 @@ export class PumpFunSDK {
   }
 
   //sell
+  async getSellInstructionsByTokenAmount(
+    seller: PublicKey,
+    mint: PublicKey,
+    sellTokenAmount: bigint,
+    slippageBasisPoints: bigint = 500n,
+    commitment: Commitment = DEFAULT_COMMITMENT
+  ) {
+    let bondingCurveAccount = await this.getBondingCurveAccount(
+      mint,
+      commitment
+    );
+    if (!bondingCurveAccount) {
+      throw new Error(`Bonding curve account not found: ${mint.toBase58()}`);
+    }
+
+    let globalAccount = await this.getGlobalAccount(commitment);
+
+    let minSolOutput = bondingCurveAccount.getSellPrice(
+      sellTokenAmount,
+      globalAccount.feeBasisPoints
+    );
+
+    let sellAmountWithSlippage = calculateWithSlippageSell(
+      minSolOutput,
+      slippageBasisPoints
+    );
+
+    return await this.getSellInstructions(
+      seller,
+      mint,
+      globalAccount.feeRecipient,
+      sellTokenAmount,
+      sellAmountWithSlippage
+    );
+  }
+
   async getSellInstructions(
     seller: PublicKey,
     mint: PublicKey,
