@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GlobalAccount = void 0;
-const borsh_1 = require("@coral-xyz/borsh");
-class GlobalAccount {
+import { struct, bool, u64, publicKey } from "@coral-xyz/borsh";
+export class GlobalAccount {
     discriminator;
     initialized = false;
     authority;
@@ -36,19 +33,18 @@ class GlobalAccount {
             : this.initialRealTokenReserves;
     }
     static fromBuffer(buffer) {
-        const structure = (0, borsh_1.struct)([
-            (0, borsh_1.u64)("discriminator"),
-            (0, borsh_1.bool)("initialized"),
-            (0, borsh_1.publicKey)("authority"),
-            (0, borsh_1.publicKey)("feeRecipient"),
-            (0, borsh_1.u64)("initialVirtualTokenReserves"),
-            (0, borsh_1.u64)("initialVirtualSolReserves"),
-            (0, borsh_1.u64)("initialRealTokenReserves"),
-            (0, borsh_1.u64)("tokenTotalSupply"),
-            (0, borsh_1.u64)("feeBasisPoints"),
+        const structure = struct([
+            u64("discriminator"),
+            bool("initialized"),
+            publicKey("authority"),
+            publicKey("feeRecipient"),
+            u64("initialVirtualTokenReserves"),
+            u64("initialVirtualSolReserves"),
+            u64("initialRealTokenReserves"),
+            u64("tokenTotalSupply"),
+            u64("feeBasisPoints"),
         ]);
         let value = structure.decode(buffer);
         return new GlobalAccount(BigInt(value.discriminator), value.initialized, value.authority, value.feeRecipient, BigInt(value.initialVirtualTokenReserves), BigInt(value.initialVirtualSolReserves), BigInt(value.initialRealTokenReserves), BigInt(value.tokenTotalSupply), BigInt(value.feeBasisPoints));
     }
 }
-exports.GlobalAccount = GlobalAccount;

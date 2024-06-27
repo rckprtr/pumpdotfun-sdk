@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AMM = void 0;
-class AMM {
+export class AMM {
     virtualSolReserves;
     virtualTokenReserves;
     realSolReserves;
@@ -57,4 +54,3 @@ class AMM {
         return sol_received < this.realSolReserves ? sol_received : this.realSolReserves;
     }
 }
-exports.AMM = AMM;

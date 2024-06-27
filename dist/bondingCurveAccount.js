@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BondingCurveAccount = void 0;
-const borsh_1 = require("@coral-xyz/borsh");
-class BondingCurveAccount {
+import { struct, bool, u64 } from "@coral-xyz/borsh";
+export class BondingCurveAccount {
     discriminator;
     virtualTokenReserves;
     virtualSolReserves;
@@ -76,17 +73,16 @@ class BondingCurveAccount {
         return totalSellValue + fee;
     }
     static fromBuffer(buffer) {
-        const structure = (0, borsh_1.struct)([
-            (0, borsh_1.u64)("discriminator"),
-            (0, borsh_1.u64)("virtualTokenReserves"),
-            (0, borsh_1.u64)("virtualSolReserves"),
-            (0, borsh_1.u64)("realTokenReserves"),
-            (0, borsh_1.u64)("realSolReserves"),
-            (0, borsh_1.u64)("tokenTotalSupply"),
-            (0, borsh_1.bool)("complete"),
+        const structure = struct([
+            u64("discriminator"),
+            u64("virtualTokenReserves"),
+            u64("virtualSolReserves"),
+            u64("realTokenReserves"),
+            u64("realSolReserves"),
+            u64("tokenTotalSupply"),
+            bool("complete"),
         ]);
         let value = structure.decode(buffer);
         return new BondingCurveAccount(BigInt(value.discriminator), BigInt(value.virtualTokenReserves), BigInt(value.virtualSolReserves), BigInt(value.realTokenReserves), BigInt(value.realSolReserves), BigInt(value.tokenTotalSupply), value.complete);
     }
 }
-exports.BondingCurveAccount = BondingCurveAccount;

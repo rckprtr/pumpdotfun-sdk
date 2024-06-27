@@ -1,38 +1,33 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTxDetails = exports.buildVersionedTx = exports.sendTx = exports.calculateWithSlippageSell = exports.calculateWithSlippageBuy = exports.DEFAULT_FINALITY = exports.DEFAULT_COMMITMENT = void 0;
-const web3_js_1 = require("@solana/web3.js");
-exports.DEFAULT_COMMITMENT = "finalized";
-exports.DEFAULT_FINALITY = "finalized";
-const calculateWithSlippageBuy = (amount, basisPoints) => {
+import { ComputeBudgetProgram, SendTransactionError, Transaction, TransactionMessage, VersionedTransaction, } from "@solana/web3.js";
+export const DEFAULT_COMMITMENT = "finalized";
+export const DEFAULT_FINALITY = "finalized";
+export const calculateWithSlippageBuy = (amount, basisPoints) => {
     return amount + (amount * basisPoints) / 10000n;
 };
-exports.calculateWithSlippageBuy = calculateWithSlippageBuy;
-const calculateWithSlippageSell = (amount, basisPoints) => {
+export const calculateWithSlippageSell = (amount, basisPoints) => {
     return amount - (amount * basisPoints) / 10000n;
 };
-exports.calculateWithSlippageSell = calculateWithSlippageSell;
-async function sendTx(connection, tx, payer, signers, priorityFees, commitment = exports.DEFAULT_COMMITMENT, finality = exports.DEFAULT_FINALITY) {
-    let newTx = new web3_js_1.Transaction();
+export async function sendTx(connection, tx, payer, signers, priorityFees, commitment = DEFAULT_COMMITMENT, finality = DEFAULT_FINALITY) {
+    let newTx = new Transaction();
     if (priorityFees) {
-        const modifyComputeUnits = web3_js_1.ComputeBudgetProgram.setComputeUnitLimit({
+        const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
             units: priorityFees.unitLimit,
         });
-        const addPriorityFee = web3_js_1.ComputeBudgetProgram.setComputeUnitPrice({
+        const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
             microLamports: priorityFees.unitPrice,
         });
         newTx.add(modifyComputeUnits);
         newTx.add(addPriorityFee);
     }
     newTx.add(tx);
-    let versionedTx = await (0, exports.buildVersionedTx)(connection, payer, newTx, commitment);
+    let versionedTx = await buildVersionedTx(connection, payer, newTx, commitment);
     versionedTx.sign(signers);
     try {
         const sig = await connection.sendTransaction(versionedTx, {
             skipPreflight: false,
         });
         console.log("sig:", `https://solscan.io/tx/${sig}`);
-        let txResult = await (0, exports.getTxDetails)(connection, sig, commitment, finality);
+        let txResult = await getTxDetails(connection, sig, commitment, finality);
         if (!txResult) {
             return {
                 success: false,
@@ -46,7 +41,7 @@ async function sendTx(connection, tx, payer, signers, priorityFees, commitment =
         };
     }
     catch (e) {
-        if (e instanceof web3_js_1.SendTransactionError) {
+        if (e instanceof SendTransactionError) {
             let ste = e;
             console.log(await ste.getLogs(connection));
         }
@@ -59,19 +54,17 @@ async function sendTx(connection, tx, payer, signers, priorityFees, commitment =
         };
     }
 }
-exports.sendTx = sendTx;
-const buildVersionedTx = async (connection, payer, tx, commitment = exports.DEFAULT_COMMITMENT) => {
+export const buildVersionedTx = async (connection, payer, tx, commitment = DEFAULT_COMMITMENT) => {
     const blockHash = (await connection.getLatestBlockhash(commitment))
         .blockhash;
-    let messageV0 = new web3_js_1.TransactionMessage({
+    let messageV0 = new TransactionMessage({
         payerKey: payer,
         recentBlockhash: blockHash,
         instructions: tx.instructions,
     }).compileToV0Message();
-    return new web3_js_1.VersionedTransaction(messageV0);
+    return new VersionedTransaction(messageV0);
 };
-exports.buildVersionedTx = buildVersionedTx;
-const getTxDetails = async (connection, sig, commitment = exports.DEFAULT_COMMITMENT, finality = exports.DEFAULT_FINALITY) => {
+export const getTxDetails = async (connection, sig, commitment = DEFAULT_COMMITMENT, finality = DEFAULT_FINALITY) => {
     const latestBlockHash = await connection.getLatestBlockhash();
     await connection.confirmTransaction({
         blockhash: latestBlockHash.blockhash,
@@ -83,4 +76,3 @@ const getTxDetails = async (connection, sig, commitment = exports.DEFAULT_COMMIT
         commitment: finality,
     });
 };
-exports.getTxDetails = getTxDetails;
