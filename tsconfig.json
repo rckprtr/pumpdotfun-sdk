@@ -1,17 +1,10 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "commonjs" /* Specify what module code is generated. */,
-    "resolveJsonModule": true /* Enable importing .json files. */,
-    "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
-    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
-    "outDir": "./dist" /* Specify an output folder for all emitted files. */,
-    "declarationDir": "./dist" /* Specify the output directory for generated declaration files. */,
-    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
-    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
-    "strict": true /* Enable all strict type-checking options. */,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
-  },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "example"]
+    "moduleResolution": "node",
+    "module": "es2022",
+    "target": "es2022",
+    "outDir": "dist/esm/",
+    "rootDir": "./src",
+  }
 }
