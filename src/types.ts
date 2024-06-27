@@ -4,7 +4,7 @@ export type CreateTokenMetadata = {
   name: string;
   symbol: string;
   description: string;
-  filePath: string;
+  file: Blob;
   twitter?: string;
   telegram?: string;
   website?: string;

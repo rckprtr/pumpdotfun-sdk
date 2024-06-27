@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import fs from "fs";
 import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { DEFAULT_DECIMALS, PumpFunSDK } from "../../src";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
@@ -69,7 +70,7 @@ const main = async () => {
       name: "TST-7",
       symbol: "TST-7",
       description: "TST-7: This is a test token",
-      filePath: "example/basic/random.png",
+      file: await fs.openAsBlob("example/basic/random.png"),
     };
 
     let createResults = await sdk.createAndBuy(
