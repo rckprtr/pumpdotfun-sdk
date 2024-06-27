@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import fs from "node:fs/promises";
+import fs from "fs";
 import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { DEFAULT_DECIMALS, PumpFunSDK } from "../../src";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
