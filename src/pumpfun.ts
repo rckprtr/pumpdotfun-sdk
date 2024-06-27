@@ -32,7 +32,6 @@ import {
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
 import { BondingCurveAccount } from "./bondingCurveAccount";
-import { openAsBlob } from "node:fs";
 import { BN } from "bn.js";
 import {
   DEFAULT_COMMITMENT,
@@ -395,16 +394,15 @@ export class PumpFunSDK {
   }
 
   async createTokenMetadata(create: CreateTokenMetadata) {
-    let file = await openAsBlob(create.filePath);
     let formData = new FormData();
-    formData.append("file", file),
-      formData.append("name", create.name),
-      formData.append("symbol", create.symbol),
-      formData.append("description", create.description),
-      formData.append("twitter", create.twitter || ""),
-      formData.append("telegram", create.telegram || ""),
-      formData.append("website", create.website || ""),
-      formData.append("showName", "true");
+    formData.append("file", create.file),
+    formData.append("name", create.name),
+    formData.append("symbol", create.symbol),
+    formData.append("description", create.description),
+    formData.append("twitter", create.twitter || ""),
+    formData.append("telegram", create.telegram || ""),
+    formData.append("website", create.website || ""),
+    formData.append("showName", "true");
     let request = await fetch("https://pump.fun/api/ipfs", {
       method: "POST",
       body: formData,
