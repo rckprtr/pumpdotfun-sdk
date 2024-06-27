@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "ESNext" /* Specify what module code is generated. */,
+    "module": "commonjs" /* Specify what module code is generated. */,
     "resolveJsonModule": true /* Enable importing .json files. */,
-    "moduleResolution": "Bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
     "outDir": "./dist" /* Specify an output folder for all emitted files. */,
     "declarationDir": "./dist" /* Specify the output directory for generated declaration files. */,
