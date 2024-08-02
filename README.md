@@ -1,5 +1,9 @@
 # PumpFunSDK README
 
+## Important
+
+Never click links in this repository leaving github, never click links in Issues, don't run code that others post without reading it, this software is provided "as is," without warranty.
+
 ## Overview
 
 The `PumpDotFunSDK` is designed to interact with the Pump.fun decentralized application. It provides methods for creating, buying, and selling tokens using the Solana blockchain. The SDK handles the necessary transactions and interactions with the Pump.fun program.
@@ -356,6 +360,22 @@ We welcome contributions! Please submit a pull request or open an issue to discu
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Here is a sample "Use at Your Own Risk" disclaimer for a GitHub repository:
+
+---
+
+## Disclaimer
+
+This software is provided "as is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+
+**Use at your own risk.** The authors take no responsibility for any harm or damage caused by the use of this software. Users are responsible for ensuring the suitability and safety of this software for their specific use cases.
+
+By using this software, you acknowledge that you have read, understood, and agree to this disclaimer.
+
+---
+
+Feel free to customize it further to suit the specific context and requirements of your project.
 
 ---
 
