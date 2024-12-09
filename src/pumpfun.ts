@@ -398,11 +398,6 @@ export class PumpFunSDK {
         throw new Error('File must be a Blob or File object');
     }
 
-    // Check file size (limit to 10MB for example)
-    if (create.file.size > 10 * 1024 * 1024) {
-        throw new Error('File size too large');
-    }
-
     let formData = new FormData();
     formData.append("file", create.file, 'image.png'); // Add filename
     formData.append("name", create.name);
