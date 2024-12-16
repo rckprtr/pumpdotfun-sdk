@@ -59,7 +59,7 @@ export class PumpFunSDK {
     this.connection = this.program.provider.connection;
   }
 
-  async createAndBuy(
+  async createAndBuy (
     creator: Keypair,
     mint: Keypair,
     createTokenMetadata: CreateTokenMetadata,
@@ -393,22 +393,56 @@ export class PumpFunSDK {
   }
 
   async createTokenMetadata(create: CreateTokenMetadata) {
-    let formData = new FormData();
-    formData.append("file", create.file),
-    formData.append("name", create.name),
-    formData.append("symbol", create.symbol),
-    formData.append("description", create.description),
-    formData.append("twitter", create.twitter || ""),
-    formData.append("telegram", create.telegram || ""),
-    formData.append("website", create.website || ""),
-    formData.append("showName", "true");
-    let request = await fetch("https://pump.fun/api/ipfs", {
-      method: "POST",
-      body: formData,
-    });
-    return request.json();
-  }
+    // Validate file
+    if (!(create.file instanceof Blob)) {
+        throw new Error('File must be a Blob or File object');
+    }
 
+    let formData = new FormData();
+    formData.append("file", create.file, 'image.png'); // Add filename
+    formData.append("name", create.name);
+    formData.append("symbol", create.symbol);
+    formData.append("description", create.description);
+    formData.append("twitter", create.twitter || "");
+    formData.append("telegram", create.telegram || "");
+    formData.append("website", create.website || "");
+    formData.append("showName", "true");
+
+    try {
+        const request = await fetch("https://pump.fun/api/ipfs", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+            },
+            body: formData,
+            credentials: 'same-origin'
+        });
+
+        if (request.status === 500) {
+            // Try to get more error details
+            const errorText = await request.text();
+            throw new Error(`Server error (500): ${errorText || 'No error details available'}`);
+        }
+
+        if (!request.ok) {
+            throw new Error(`HTTP error! status: ${request.status}`);
+        }
+
+        const responseText = await request.text();
+        if (!responseText) {
+            throw new Error('Empty response received from server');
+        }
+
+        try {
+            return JSON.parse(responseText);
+        } catch (e) {
+            throw new Error(`Invalid JSON response: ${responseText}`);
+        }
+    } catch (error) {
+        console.error('Error in createTokenMetadata:', error);
+        throw error;
+    }
+}
   //EVENTS
   addEventListener<T extends PumpFunEventType>(
     eventType: T,

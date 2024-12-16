@@ -79,7 +79,7 @@ export async function sendTx(
   } catch (e) {
     if (e instanceof SendTransactionError) {
       let ste = e as SendTransactionError;
-      console.log(await ste.getLogs(connection));
+      console.log("SendTransactionError" + await ste.getLogs(connection));
     } else {
       console.error(e);
     }

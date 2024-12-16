@@ -26,7 +26,7 @@
     "sdk",
     "solana"
   ],
-  "author": "",
+  "author": "Rick Porter, kalloc, Elijah Bare",
   "license": "ISC",
   "devDependencies": {
     "@coral-xyz/borsh": "^0.30.1",
