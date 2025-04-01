@@ -6,6 +6,9 @@
   "main": "./dist/cjs/index.js",
   "browser": "./dist/browser/index.js",
   "types": "dist/cjs/index.d.ts",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -38,7 +41,7 @@
     "@types/node": "^20.17.30",
     "dotenv": "^16.4.7",
     "js-sha256": "^0.11.0",
-    "rimraf": "^5.0.10",
+    "rimraf": "^6.0.1",
     "rollup": "^4.38.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
