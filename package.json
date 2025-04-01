@@ -32,8 +32,8 @@
   "author": "Rick Porter, kalloc, Elijah Bare",
   "license": "ISC",
   "devDependencies": {
-    "@coral-xyz/borsh": "^0.31.0",
     "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-typescript": "^12.1.2",
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.0",
-    "@rollup/plugin-json": "^6.1.0",
+    "@coral-xyz/borsh": "^0.31.0",
     "@solana/spl-token": "0.4.13",
     "@solana/web3.js": "^1.98.0"
   }
