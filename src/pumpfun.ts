@@ -7,7 +7,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { Program, Provider } from "@coral-xyz/anchor";
-import { GlobalAccount } from "./globalAccount";
+import { GlobalAccount } from "./globalAccount.js";
 import {
   CompleteEvent,
   CreateEvent,
@@ -18,19 +18,19 @@ import {
   SetParamsEvent,
   TradeEvent,
   TransactionResult,
-} from "./types";
+} from "./types.js";
 import {
   toCompleteEvent,
   toCreateEvent,
   toSetParamsEvent,
   toTradeEvent,
-} from "./events";
+} from "./events.js";
 import {
   createAssociatedTokenAccountInstruction,
   getAccount,
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
-import { BondingCurveAccount } from "./bondingCurveAccount";
+import { BondingCurveAccount } from "./bondingCurveAccount.js";
 import { BN } from "bn.js";
 import {
   DEFAULT_COMMITMENT,
@@ -38,8 +38,8 @@ import {
   calculateWithSlippageBuy,
   calculateWithSlippageSell,
   sendTx,
-} from "./util";
-import { PumpFun, IDL } from "./IDL";
+} from "./util.js";
+import { PumpFun, IDL } from "./IDL/index.js";
 const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 const MPL_TOKEN_METADATA_PROGRAM_ID =
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";

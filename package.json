@@ -2,23 +2,30 @@
   "name": "pumpdotfun-sdk",
   "version": "1.3.2",
   "description": "A simple SDK for interacting with pumpdotfun",
-  "module": "./dist/esm/index.js",
-  "main": "./dist/cjs/index.js",
+  "type": "module",
+  "module": "./dist/esm/index.mjs",
+  "main": "./dist/cjs/index.cjs",
   "browser": "./dist/browser/index.js",
-  "types": "dist/cjs/index.d.ts",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "browser": "./dist/browser/index.js",
+      "default": "./dist/esm/index.mjs"
+    }
+  },
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist/ && npm run build:node && npm run build:browser",
-    "build:node": "tsc && tsc -p tsconfig.cjs.json",
-    "build:browser": "rollup -c rollup.config.js --bundleConfigAsCjs"
+    "build": "rimraf dist/ && rollup -c --bundleConfigAsCjs"
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -37,6 +44,7 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-typescript": "^12.1.2",
+    "@tsconfig/node20": "^20.1.5",
     "@types/bn.js": "^5.1.6",
     "@types/node": "^20.17.30",
     "dotenv": "^16.4.7",

@@ -1,2 +1,2 @@
 export { default as IDL } from "./pump-fun.json";
-export { PumpFun } from "./pump-fun";
+export { PumpFun } from "./pump-fun.js";

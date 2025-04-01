@@ -4,7 +4,7 @@ import {
   CreateEvent,
   SetParamsEvent,
   TradeEvent,
-} from "./types";
+} from "./types.js";
 
 export function toCreateEvent(event: CreateEvent): CreateEvent {
   return {
