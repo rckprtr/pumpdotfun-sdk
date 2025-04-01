@@ -16,7 +16,7 @@ export default {
     typescript({
       tsconfig: "./tsconfig.base.json",
       moduleResolution: "node",
-      outDir: "types",
+      outDir: "./dist/browser",
       target: "es2022",
       outputToFilesystem: false,
     }),
