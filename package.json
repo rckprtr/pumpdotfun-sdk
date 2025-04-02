@@ -21,7 +21,7 @@
   },
   "scripts": {
     "prepare": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:builds": "npm run build && node --test ./__tests__/**/*.test.*js",
     "build": "rimraf dist/ && rollup -c --bundleConfigAsCjs",
     "example": "tsx example/basic/index.ts"
   },
