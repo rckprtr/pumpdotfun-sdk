@@ -480,7 +480,6 @@ export class PumpFunSDK {
               slot,
               signature
             );
-            console.log("completeEvent", event, slot, signature);
             break;
           case "setParamsEvent":
             processedEvent = toSetParamsEvent(event as SetParamsEvent);
