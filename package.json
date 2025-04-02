@@ -17,7 +17,7 @@
     }
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=v20.9.0"
   },
   "scripts": {
     "prepare": "npm run build",
