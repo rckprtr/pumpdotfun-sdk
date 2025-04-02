@@ -1,17 +1,17 @@
 import dotenv from "dotenv";
 import fs from "fs";
+import path from "path";
 import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { DEFAULT_DECIMALS, PumpFunSDK } from "../../src";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { AnchorProvider } from "@coral-xyz/anchor";
+import { DEFAULT_DECIMALS, PumpFunSDK } from "../../src/index.js";
+import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
 import {
   getOrCreateKeypair,
   getSPLBalance,
   printSOLBalance,
   printSPLBalance,
-} from "../util";
+} from "../util.js";
 
-const KEYS_FOLDER = __dirname + "/.keys";
+const KEYS_FOLDER = path.join(import.meta.dirname, ".keys");
 const SLIPPAGE_BASIS_POINTS = 100n;
 
 //create token example:
@@ -33,7 +33,7 @@ const main = async () => {
 
   let connection = new Connection(process.env.HELIUS_RPC_URL || "");
 
-  let wallet = new NodeWallet(new Keypair()); //note this is not used
+  let wallet = new Wallet(new Keypair()); //note this is not used
   const provider = new AnchorProvider(connection, wallet, {
     commitment: "finalized",
   });

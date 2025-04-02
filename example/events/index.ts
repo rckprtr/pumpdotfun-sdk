@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 import { Connection, Keypair } from "@solana/web3.js";
-import { PumpFunSDK } from "../../src";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { AnchorProvider } from "@coral-xyz/anchor";
+import { PumpFunSDK } from "../../src/index.js";
+import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
 
 const main = async () => {
   dotenv.config();
@@ -18,7 +17,7 @@ const main = async () => {
 
   let connection = new Connection(process.env.HELIUS_RPC_URL || "");
 
-  let wallet = new NodeWallet(new Keypair()); //note this is not used
+  let wallet = new Wallet(new Keypair()); //note this is not used
   const provider = new AnchorProvider(connection, wallet, {
     commitment: "finalized",
   });

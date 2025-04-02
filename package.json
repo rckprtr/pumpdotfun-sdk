@@ -22,7 +22,8 @@
   "scripts": {
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist/ && rollup -c --bundleConfigAsCjs"
+    "build": "rimraf dist/ && rollup -c --bundleConfigAsCjs",
+    "example": "tsx example/basic/index.ts"
   },
   "files": [
     "dist"
@@ -49,7 +50,7 @@
     "js-sha256": "^0.11.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.38.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   },
   "dependencies": {
