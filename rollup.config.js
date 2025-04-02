@@ -36,8 +36,6 @@ export default [
       typescript({
         tsconfig: "./tsconfig.base.json",
         outDir: "./dist/esm",
-        declaration: true,
-        declarationMap: true,
         outputToFilesystem: false,
       }),
     ],
@@ -60,8 +58,6 @@ export default [
       typescript({
         tsconfig: "./tsconfig.base.json",
         outDir: "./dist/cjs",
-        declaration: true,
-        declarationMap: true,
         outputToFilesystem: false,
       }),
     ],
@@ -86,8 +82,6 @@ export default [
       typescript({
         tsconfig: "./tsconfig.base.json",
         outDir: "./dist/browser",
-        declaration: true,
-        declarationMap: true,
         outputToFilesystem: false,
         compilerOptions: {
           module: "ES2022",
