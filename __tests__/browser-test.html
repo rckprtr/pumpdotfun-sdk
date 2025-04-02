@@ -1,0 +1,27 @@
+<!-- browser-test.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browser SDK Test</title>
+</head>
+<body>
+  <script type="module">
+    import { PumpFunSDK } from '../dist/browser/with-external/index.js';
+
+    if (!PumpFunSDK) {
+      throw new Error('❌ PumpFunSDK is not defined');
+    }
+
+    if (typeof PumpFunSDK !== 'function') {
+      throw new Error(`❌ PumpFunSDK is not a function, got: ${typeof PumpFunSDK}`);
+    }
+
+    if (PumpFunSDK.name !== 'PumpFunSDK') {
+      throw new Error(`❌ Unexpected class name: ${PumpFunSDK.name}`);
+    }
+
+    console.log('Passed browser checks');
+  </script>
+</body>
+</html>

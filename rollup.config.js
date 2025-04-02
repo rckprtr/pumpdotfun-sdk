@@ -91,4 +91,31 @@ export default [
     ],
     external,
   },
+  // Browser build with external bundle
+  {
+    input: "src/index.ts",
+    output: {
+      file: "dist/browser/with-external/index.js",
+      format: "es",
+      sourcemap: true,
+    },
+    plugins: [
+      commonjs(),
+      json(),
+      nodeResolve({
+        browser: true,
+        extensions: [".js", ".ts"],
+        preferBuiltins: false,
+      }),
+      typescript({
+        tsconfig: "./tsconfig.base.json",
+        outDir: "./dist/browser/with-external",
+        outputToFilesystem: false,
+        compilerOptions: {
+          module: "ES2022",
+          moduleResolution: "bundler"
+        }
+      }),
+    ],
+  },
 ];
