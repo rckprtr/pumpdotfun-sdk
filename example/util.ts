@@ -1,4 +1,4 @@
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import * as bs58 from "@coral-xyz/anchor/dist/esm/utils/bytes/bs58.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   Keypair,

@@ -1,5 +1,5 @@
-import { BondingCurveAccount } from "./bondingCurveAccount";
-import { GlobalAccount } from "./globalAccount";
+import { BondingCurveAccount } from "./bondingCurveAccount.js";
+import { GlobalAccount } from "./globalAccount.js";
 
 export type BuyResult = {
     token_amount: bigint;

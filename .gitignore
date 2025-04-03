@@ -13,3 +13,6 @@ dist/
 
 .env
 refs/
+
+.vscode/
+.idea/

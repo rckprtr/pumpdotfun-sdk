@@ -11,7 +11,7 @@ import {
   VersionedTransaction,
   VersionedTransactionResponse,
 } from "@solana/web3.js";
-import { PriorityFee, TransactionResult } from "./types";
+import { PriorityFee, TransactionResult } from "./types.js";
 
 export const DEFAULT_COMMITMENT: Commitment = "finalized";
 export const DEFAULT_FINALITY: Finality = "finalized";

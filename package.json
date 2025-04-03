@@ -2,21 +2,31 @@
   "name": "pumpdotfun-sdk",
   "version": "1.3.2",
   "description": "A simple SDK for interacting with pumpdotfun",
-  
-  "module": "./dist/esm/index.js",
-  "main": "./dist/cjs/index.js",
+  "type": "module",
+  "module": "./dist/esm/index.mjs",
+  "main": "./dist/cjs/index.cjs",
   "browser": "./dist/browser/index.js",
-  "types": "dist/cjs/index.d.ts",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
+      "browser": "./dist/browser/index.js",
+      "default": "./dist/esm/index.mjs"
+    }
+  },
+  "engines": {
+    "node": ">=v20.9.0"
+  },
   "scripts": {
     "prepare": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist/ && npm run build:node && npm run build:browser",
-    "build:node": "tsc && tsc -p tsconfig.cjs.json",
-    "build:browser": "rollup -c rollup.config.js --bundleConfigAsCjs"
+    "test:builds": "npm run build && node --test ./__tests__/**/*.test.*js",
+    "build": "rimraf dist/ && rollup -c --bundleConfigAsCjs",
+    "example": "tsx example/basic/index.ts"
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -30,24 +40,24 @@
   "author": "Rick Porter, kalloc, Elijah Bare",
   "license": "MIT",
   "devDependencies": {
-    "@coral-xyz/borsh": "^0.30.1",
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.7",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/bn.js": "^5.1.5",
-    "@types/node": "^20.14.1",
-    "dotenv": "^16.4.5",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@tsconfig/node20": "^20.1.5",
+    "@types/node": "^20.17.30",
+    "dotenv": "^16.4.7",
     "js-sha256": "^0.11.0",
-    "rimraf": "^3.0.2",
-    "rollup": "^4.18.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.2"
+    "puppeteer": "^24.5.0",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.38.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.1",
-    "@rollup/plugin-json": "^6.1.0",
-    "@solana/spl-token": "0.4.6",
-    "@solana/web3.js": "^1.92.1"
+    "@coral-xyz/anchor": "^0.31.0",
+    "@coral-xyz/borsh": "^0.31.0",
+    "@solana/spl-token": "0.4.13",
+    "@solana/web3.js": "^1.98.0"
   }
 }
