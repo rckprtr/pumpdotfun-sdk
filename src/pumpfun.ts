@@ -73,8 +73,8 @@ export class PumpFunSDK {
 
     let createTx = await this.getCreateInstructions(
       creator.publicKey,
-      createTokenMetadata.name,
-      createTokenMetadata.symbol,
+      tokenMetadata.name,
+      tokenMetadata.symbol,
       tokenMetadata.metadataUri,
       mint
     );
