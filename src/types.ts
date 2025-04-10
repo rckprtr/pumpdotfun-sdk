@@ -78,3 +78,56 @@ export type TransactionResult = {
   results?: VersionedTransactionResponse;
   success: boolean;
 };
+
+export type BuyEvent = {
+  timestamp: number;
+  baseAmountOut: bigint;
+  maxQuoteAmountIn: bigint;
+  userBaseTokenReserves: bigint;
+  userQuoteTokenReserves: bigint;
+  poolBaseTokenReserves: bigint;
+  poolQuoteTokenReserves: bigint;
+  quoteAmountIn: bigint;
+  lpFeeBasisPoints: bigint;
+  lpFee: bigint;
+  protocolFeeBasisPoints: bigint;
+  protocolFee: bigint;
+  quoteAmountInWithLpFee: bigint;
+  userQuoteAmountIn: bigint;
+  pool: PublicKey;
+  user: PublicKey;
+  userBaseTokenAccount: PublicKey;
+  userQuoteTokenAccount: PublicKey;
+  protocolFeeRecipient: PublicKey;
+  protocolFeeRecipientTokenAccount: PublicKey;
+};
+
+export type SellEvent = {
+  timestamp: number;
+  baseAmountIn: bigint;
+  minQuoteAmountOut: bigint;
+  userBaseTokenReserves: bigint;
+  userQuoteTokenReserves: bigint;
+  poolBaseTokenReserves: bigint;
+  poolQuoteTokenReserves: bigint;
+  quoteAmountOut: bigint;
+  lpFeeBasisPoints: bigint;
+  lpFee: bigint;
+  protocolFeeBasisPoints: bigint;
+  protocolFee: bigint;
+  quoteAmountOutWithoutLpFee: bigint;
+  userQuoteAmountOut: bigint;
+  pool: PublicKey;
+  user: PublicKey;
+  userBaseTokenAccount: PublicKey;
+  userQuoteTokenAccount: PublicKey;
+  protocolFeeRecipient: PublicKey;
+  protocolFeeRecipientTokenAccount: PublicKey;
+};
+
+export type PumpSwapEventHandlers = {
+  buyEvent: BuyEvent;
+  sellEvent: SellEvent;
+};
+
+export type PumpSwapEventType = keyof PumpSwapEventHandlers;
