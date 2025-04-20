@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { Connection, Keypair } from "@solana/web3.js";
 import { PumpFunSDK } from "../../src/index.js";
 import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
+import { PumpSwapSDK } from "../../src/pumpswap.js";
 
 const main = async () => {
   dotenv.config();
@@ -22,22 +23,33 @@ const main = async () => {
     commitment: "finalized",
   });
 
-  let sdk = new PumpFunSDK(provider);
+  let pumpFunSDK = new PumpFunSDK(provider);
 
-  let createEvent = sdk.addEventListener("createEvent", (event) => {
+  let createEvent = pumpFunSDK.addEventListener("createEvent", (event) => {
     console.log("createEvent", event);
   });
   console.log("createEvent", createEvent);
 
-  let tradeEvent = sdk.addEventListener("tradeEvent", (event) => {
+  let tradeEvent = pumpFunSDK.addEventListener("tradeEvent", (event) => {
     console.log("tradeEvent", event);
   });
   console.log("tradeEvent", tradeEvent);
 
-  let completeEvent = sdk.addEventListener("completeEvent", (event) => {
+  let completeEvent = pumpFunSDK.addEventListener("completeEvent", (event) => {
     console.log("completeEvent", event);
   });
   console.log("completeEvent", completeEvent);
+
+  const pumpSwapSDK = new PumpSwapSDK(provider);
+  let buyEvent = pumpSwapSDK.addEventListener("buyEvent", (event) => {
+    console.log("buyEvent", event);
+  });
+  console.log("buyEvent", buyEvent);
+
+  let sellEvent = pumpSwapSDK.addEventListener("sellEvent", (event) => {
+    console.log("sellEvent", event);
+  });
+  console.log("sellEvent", sellEvent);
 };
 
 main();
