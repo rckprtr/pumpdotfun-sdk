@@ -125,9 +125,118 @@ export type SellEvent = {
   protocolFeeRecipientTokenAccount: PublicKey;
 };
 
+export type CreateConfigEvent = {
+  timestamp: number;
+  admin: PublicKey;
+  lpFeeBasisPoints: bigint;
+  protocolFeeBasisPoints: bigint;
+  protocolFeeRecipients: PublicKey[];
+};
+
+export type CreatePoolEvent = {
+  timestamp: number;
+  index: number;
+  creator: PublicKey;
+  baseMint: PublicKey;
+  quoteMint: PublicKey;
+  baseMintDecimals: number;
+  quoteMintDecimals: number;
+  baseAmountIn: bigint;
+  quoteAmountIn: bigint;
+  poolBaseAmount: bigint;
+  poolQuoteAmount: bigint;
+  minimumLiquidity: bigint;
+  initialLiquidity: bigint;
+  lpTokenAmountOut: bigint;
+  poolBump: number;
+  pool: PublicKey;
+  lpMint: PublicKey;
+  userBaseTokenAccount: PublicKey;
+  userQuoteTokenAccount: PublicKey;
+};
+
+export type DepositEvent = {
+  timestamp: number;
+  lpTokenAmountOut: bigint;
+  maxBaseAmountIn: bigint;
+  maxQuoteAmountIn: bigint;
+  userBaseTokenReserves: bigint;
+  userQuoteTokenReserves: bigint;
+  poolBaseTokenReserves: bigint;
+  poolQuoteTokenReserves: bigint;
+  baseAmountIn: bigint;
+  quoteAmountIn: bigint;
+  lpMintSupply: bigint;
+  pool: PublicKey;
+  user: PublicKey;
+  userBaseTokenAccount: PublicKey;
+  userQuoteTokenAccount: PublicKey;
+  userPoolTokenAccount: PublicKey;
+};
+
+export type DisableEvent = {
+  timestamp: number;
+  admin: PublicKey;
+  disableCreatePool: boolean;
+  disableDeposit: boolean;
+  disableWithdraw: boolean;
+  disableBuy: boolean;
+  disableSell: boolean;
+};
+
+export type ExtendAccountEvent = {
+  timestamp: number;
+  account: PublicKey;
+  user: PublicKey;
+  currentSize: bigint;
+  newSize: bigint;
+};
+
+export type UpdateAdminEvent = {
+  timestamp: number;
+  admin: PublicKey;
+  newAdmin: PublicKey;
+};
+
+export type UpdateFeeConfigEvent = {
+  timestamp: number;
+  admin: PublicKey;
+  lpFeeBasisPoints: bigint;
+  protocolFeeBasisPoints: bigint;
+  protocolFeeRecipients: PublicKey[];
+};
+
+export type WithdrawEvent = {
+  timestamp: number;
+  lpTokenAmountIn: bigint;
+  minBaseAmountOut: bigint;
+  minQuoteAmountOut: bigint;
+  userBaseTokenReserves: bigint;
+  userQuoteTokenReserves: bigint;
+  poolBaseTokenReserves: bigint;
+  poolQuoteTokenReserves: bigint;
+  baseAmountOut: bigint;
+  quoteAmountOut: bigint;
+  lpMintSupply: bigint;
+  pool: PublicKey;
+  user: PublicKey;
+  userBaseTokenAccount: PublicKey;
+  userQuoteTokenAccount: PublicKey;
+  userPoolTokenAccount: PublicKey;
+};
+
 export type PumpSwapEventHandlers = {
   buyEvent: BuyEvent;
   sellEvent: SellEvent;
+  createConfigEvent: CreateConfigEvent;
+  createPoolEvent: CreatePoolEvent;
+  depositEvent: DepositEvent;
+  disableEvent: DisableEvent;
+  extendAccountEvent: ExtendAccountEvent;
+  updateAdminEvent: UpdateAdminEvent;
+  updateFeeConfigEvent: UpdateFeeConfigEvent;
+  withdrawEvent: WithdrawEvent;
 };
 
 export type PumpSwapEventType = keyof PumpSwapEventHandlers;
+
