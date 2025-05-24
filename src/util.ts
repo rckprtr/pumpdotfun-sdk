@@ -23,12 +23,17 @@ export const calculateWithSlippageBuy = (
   return amount + (amount * basisPoints) / 10000n;
 };
 
-export const calculateWithSlippageSell = (
+export function calculateWithSlippageSell(
   amount: bigint,
-  basisPoints: bigint
-) => {
-  return amount - (amount * basisPoints) / 10000n;
-};
+  slippageBasisPoints: bigint = 500n,
+): bigint {
+  // Actually use the slippage basis points for calculation
+  const reduction = Math.max(
+    1,
+    Number((amount * slippageBasisPoints) / 10000n)
+  );
+  return amount - BigInt(reduction);
+}
 
 export async function sendTx(
   connection: Connection,
