@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import { struct, bool, u64, publicKey, Layout } from "@coral-xyz/borsh";
+import { struct, bool, u64, publicKey, Layout, array } from "@coral-xyz/borsh";
 
 export class GlobalAccount {
   public discriminator: bigint;
@@ -11,6 +11,12 @@ export class GlobalAccount {
   public initialRealTokenReserves: bigint;
   public tokenTotalSupply: bigint;
   public feeBasisPoints: bigint;
+  public withdrawAuthority: PublicKey;
+  public enableMigrate: boolean;
+  public poolMigrationFee: bigint;
+  public creatorFeeBasisPoints: bigint;
+  public feeRecipients: PublicKey[];
+  public setCreatorAuthority: PublicKey;
 
   constructor(
     discriminator: bigint,
@@ -21,7 +27,13 @@ export class GlobalAccount {
     initialVirtualSolReserves: bigint,
     initialRealTokenReserves: bigint,
     tokenTotalSupply: bigint,
-    feeBasisPoints: bigint
+    feeBasisPoints: bigint,
+    withdrawAuthority: PublicKey,
+    enableMigrate: boolean,
+    poolMigrationFee: bigint,
+    creatorFeeBasisPoints: bigint,
+    feeRecipients: PublicKey[],
+    setCreatorAuthority: PublicKey
   ) {
     this.discriminator = discriminator;
     this.initialized = initialized;
@@ -32,6 +44,17 @@ export class GlobalAccount {
     this.initialRealTokenReserves = initialRealTokenReserves;
     this.tokenTotalSupply = tokenTotalSupply;
     this.feeBasisPoints = feeBasisPoints;
+    this.withdrawAuthority = withdrawAuthority;
+    this.enableMigrate = enableMigrate;
+    this.poolMigrationFee = poolMigrationFee;
+    this.creatorFeeBasisPoints = creatorFeeBasisPoints;
+    this.feeRecipients = feeRecipients;
+    this.setCreatorAuthority = setCreatorAuthority;
+  }
+
+  /** Total fee basis points (protocol + creator) */
+  getTotalFeeBasisPoints(): bigint {
+    return this.feeBasisPoints + this.creatorFeeBasisPoints;
   }
 
   getInitialBuyPrice(amount: bigint): bigint {
@@ -59,6 +82,12 @@ export class GlobalAccount {
       u64("initialRealTokenReserves"),
       u64("tokenTotalSupply"),
       u64("feeBasisPoints"),
+      publicKey("withdrawAuthority"),
+      bool("enableMigrate"),
+      u64("poolMigrationFee"),
+      u64("creatorFeeBasisPoints"),
+      array(publicKey(), 7, "feeRecipients"),
+      publicKey("setCreatorAuthority"),
     ]);
 
     let value = structure.decode(buffer);
@@ -71,7 +100,13 @@ export class GlobalAccount {
       BigInt(value.initialVirtualSolReserves),
       BigInt(value.initialRealTokenReserves),
       BigInt(value.tokenTotalSupply),
-      BigInt(value.feeBasisPoints)
+      BigInt(value.feeBasisPoints),
+      value.withdrawAuthority,
+      value.enableMigrate,
+      BigInt(value.poolMigrationFee),
+      BigInt(value.creatorFeeBasisPoints),
+      value.feeRecipients,
+      value.setCreatorAuthority
     );
   }
 }

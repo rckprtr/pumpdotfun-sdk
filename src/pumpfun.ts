@@ -4,6 +4,7 @@ import {
   Finality,
   Keypair,
   PublicKey,
+  SystemProgram,
   Transaction,
 } from "@solana/web3.js";
 import { Program, Provider } from "@coral-xyz/anchor";
@@ -29,6 +30,7 @@ import {
   createAssociatedTokenAccountInstruction,
   getAccount,
   getAssociatedTokenAddress,
+  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { BondingCurveAccount } from "./bondingCurveAccount.js";
 import { BN } from "bn.js";
@@ -40,16 +42,28 @@ import {
   sendTx,
 } from "./util.js";
 import { PumpFun, IDL } from "./IDL/index.js";
+
 const PROGRAM_ID = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
 const MPL_TOKEN_METADATA_PROGRAM_ID =
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
+const FEE_PROGRAM_ID = "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ";
 
 export const GLOBAL_ACCOUNT_SEED = "global";
 export const MINT_AUTHORITY_SEED = "mint-authority";
 export const BONDING_CURVE_SEED = "bonding-curve";
 export const METADATA_SEED = "metadata";
+export const CREATOR_VAULT_SEED = "creator-vault";
+export const GLOBAL_VOLUME_ACCUMULATOR_SEED = "global_volume_accumulator";
+export const USER_VOLUME_ACCUMULATOR_SEED = "user_volume_accumulator";
+export const FEE_CONFIG_SEED = "fee_config";
 
 export const DEFAULT_DECIMALS = 6;
+
+// The admin pubkey used in fee_config PDA derivation (from official IDL)
+const FEE_CONFIG_ADMIN_BYTES = new Uint8Array([
+  1, 86, 224, 246, 147, 102, 90, 207, 68, 219, 21, 104, 191, 23, 91, 170, 81,
+  137, 203, 151, 245, 210, 255, 59, 101, 93, 43, 182, 253, 109, 24, 176,
+]);
 
 export class PumpFunSDK {
   public program: Program<PumpFun>;
@@ -59,7 +73,7 @@ export class PumpFunSDK {
     this.connection = this.program.provider.connection;
   }
 
-  async createAndBuy (
+  async createAndBuy(
     creator: Keypair,
     mint: Keypair,
     createTokenMetadata: CreateTokenMetadata,
@@ -94,7 +108,8 @@ export class PumpFunSDK {
         mint.publicKey,
         globalAccount.feeRecipient,
         buyAmount,
-        buyAmountWithSlippage
+        buyAmountWithSlippage,
+        commitment
       );
 
       newTx.add(buyTx);
@@ -235,7 +250,8 @@ export class PumpFunSDK {
       mint,
       globalAccount.feeRecipient,
       buyAmount,
-      buyAmountWithSlippage
+      buyAmountWithSlippage,
+      commitment
     );
   }
 
@@ -271,15 +287,41 @@ export class PumpFunSDK {
       );
     }
 
+    // Read bonding curve to get creator for creator_vault PDA
+    const bondingCurveAccount = await this.getBondingCurveAccount(
+      mint,
+      commitment
+    );
+    if (!bondingCurveAccount) {
+      throw new Error(`Bonding curve account not found: ${mint.toBase58()}`);
+    }
+
+    const creatorVault = this.getCreatorVaultPDA(bondingCurveAccount.creator);
+    const globalVolumeAccumulator = this.getGlobalVolumeAccumulatorPDA();
+    const userVolumeAccumulator = this.getUserVolumeAccumulatorPDA(buyer);
+    const feeConfig = this.getFeeConfigPDA();
+    const feeProgramId = new PublicKey(FEE_PROGRAM_ID);
+
     transaction.add(
       await this.program.methods
-        .buy(new BN(amount.toString()), new BN(solAmount.toString()))
+        .buy(new BN(amount.toString()), new BN(solAmount.toString()), null)
         .accounts({
+          global: this.getGlobalPDA(),
           feeRecipient: feeRecipient,
           mint: mint,
+          bondingCurve: this.getBondingCurvePDA(mint),
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
           user: buyer,
+          systemProgram: SystemProgram.programId,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          creatorVault: creatorVault,
+          eventAuthority: this.getEventAuthorityPDA(),
+          program: new PublicKey(PROGRAM_ID),
+          globalVolumeAccumulator: globalVolumeAccumulator,
+          userVolumeAccumulator: userVolumeAccumulator,
+          feeConfig: feeConfig,
+          feeProgram: feeProgramId,
         })
         .transaction()
     );
@@ -305,9 +347,12 @@ export class PumpFunSDK {
 
     let globalAccount = await this.getGlobalAccount(commitment);
 
+    // Use combined protocol + creator fee for sell price calculation
+    let totalFeeBps = globalAccount.getTotalFeeBasisPoints();
+
     let minSolOutput = bondingCurveAccount.getSellPrice(
       sellTokenAmount,
-      globalAccount.feeBasisPoints
+      totalFeeBps
     );
 
     let sellAmountWithSlippage = calculateWithSlippageSell(
@@ -320,7 +365,8 @@ export class PumpFunSDK {
       mint,
       globalAccount.feeRecipient,
       sellTokenAmount,
-      sellAmountWithSlippage
+      sellAmountWithSlippage,
+      commitment
     );
   }
 
@@ -329,7 +375,8 @@ export class PumpFunSDK {
     mint: PublicKey,
     feeRecipient: PublicKey,
     amount: bigint,
-    minSolOutput: bigint
+    minSolOutput: bigint,
+    commitment: Commitment = DEFAULT_COMMITMENT
   ) {
     const associatedBondingCurve = await getAssociatedTokenAddress(
       mint,
@@ -339,17 +386,39 @@ export class PumpFunSDK {
 
     const associatedUser = await getAssociatedTokenAddress(mint, seller, false);
 
+    // Read bonding curve to get creator for creator_vault PDA
+    const bondingCurveAccount = await this.getBondingCurveAccount(
+      mint,
+      commitment
+    );
+    if (!bondingCurveAccount) {
+      throw new Error(`Bonding curve account not found: ${mint.toBase58()}`);
+    }
+
+    const creatorVault = this.getCreatorVaultPDA(bondingCurveAccount.creator);
+    const feeConfig = this.getFeeConfigPDA();
+    const feeProgramId = new PublicKey(FEE_PROGRAM_ID);
+
     let transaction = new Transaction();
 
     transaction.add(
       await this.program.methods
         .sell(new BN(amount.toString()), new BN(minSolOutput.toString()))
         .accounts({
+          global: this.getGlobalPDA(),
           feeRecipient: feeRecipient,
           mint: mint,
+          bondingCurve: this.getBondingCurvePDA(mint),
           associatedBondingCurve: associatedBondingCurve,
           associatedUser: associatedUser,
           user: seller,
+          systemProgram: SystemProgram.programId,
+          creatorVault: creatorVault,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          eventAuthority: this.getEventAuthorityPDA(),
+          program: new PublicKey(PROGRAM_ID),
+          feeConfig: feeConfig,
+          feeProgram: feeProgramId,
         })
         .transaction()
     );
@@ -372,34 +441,73 @@ export class PumpFunSDK {
   }
 
   async getGlobalAccount(commitment: Commitment = DEFAULT_COMMITMENT) {
-    const [globalAccountPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from(GLOBAL_ACCOUNT_SEED)],
-      new PublicKey(PROGRAM_ID)
-    );
-
     const tokenAccount = await this.connection.getAccountInfo(
-      globalAccountPDA,
+      this.getGlobalPDA(),
       commitment
     );
 
     return GlobalAccount.fromBuffer(tokenAccount!.data);
   }
 
-  getBondingCurvePDA(mint: PublicKey) {
+  // --- PDA derivation helpers ---
+
+  getGlobalPDA(): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(GLOBAL_ACCOUNT_SEED)],
+      new PublicKey(PROGRAM_ID)
+    )[0];
+  }
+
+  getBondingCurvePDA(mint: PublicKey): PublicKey {
     return PublicKey.findProgramAddressSync(
       [Buffer.from(BONDING_CURVE_SEED), mint.toBuffer()],
       this.program.programId
     )[0];
   }
 
+  getCreatorVaultPDA(creator: PublicKey): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(CREATOR_VAULT_SEED), creator.toBuffer()],
+      new PublicKey(PROGRAM_ID)
+    )[0];
+  }
+
+  getEventAuthorityPDA(): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from("__event_authority")],
+      new PublicKey(PROGRAM_ID)
+    )[0];
+  }
+
+  getGlobalVolumeAccumulatorPDA(): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(GLOBAL_VOLUME_ACCUMULATOR_SEED)],
+      new PublicKey(PROGRAM_ID)
+    )[0];
+  }
+
+  getUserVolumeAccumulatorPDA(user: PublicKey): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(USER_VOLUME_ACCUMULATOR_SEED), user.toBuffer()],
+      new PublicKey(PROGRAM_ID)
+    )[0];
+  }
+
+  getFeeConfigPDA(): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(FEE_CONFIG_SEED), FEE_CONFIG_ADMIN_BYTES],
+      new PublicKey(FEE_PROGRAM_ID)
+    )[0];
+  }
+
   async createTokenMetadata(create: CreateTokenMetadata) {
     // Validate file
     if (!(create.file instanceof Blob)) {
-        throw new Error('File must be a Blob or File object');
+      throw new Error("File must be a Blob or File object");
     }
 
     let formData = new FormData();
-    formData.append("file", create.file, 'image.png'); // Add filename
+    formData.append("file", create.file, "image.png");
     formData.append("name", create.name);
     formData.append("symbol", create.symbol);
     formData.append("description", create.description);
@@ -409,40 +517,42 @@ export class PumpFunSDK {
     formData.append("showName", "true");
 
     try {
-        const request = await fetch("https://pump.fun/api/ipfs", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-            },
-            body: formData,
-            credentials: 'same-origin'
-        });
+      const request = await fetch("https://pump.fun/api/ipfs", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
+        credentials: "same-origin",
+      });
 
-        if (request.status === 500) {
-            // Try to get more error details
-            const errorText = await request.text();
-            throw new Error(`Server error (500): ${errorText || 'No error details available'}`);
-        }
+      if (request.status === 500) {
+        const errorText = await request.text();
+        throw new Error(
+          `Server error (500): ${errorText || "No error details available"}`
+        );
+      }
 
-        if (!request.ok) {
-            throw new Error(`HTTP error! status: ${request.status}`);
-        }
+      if (!request.ok) {
+        throw new Error(`HTTP error! status: ${request.status}`);
+      }
 
-        const responseText = await request.text();
-        if (!responseText) {
-            throw new Error('Empty response received from server');
-        }
+      const responseText = await request.text();
+      if (!responseText) {
+        throw new Error("Empty response received from server");
+      }
 
-        try {
-            return JSON.parse(responseText);
-        } catch (e) {
-            throw new Error(`Invalid JSON response: ${responseText}`);
-        }
+      try {
+        return JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`Invalid JSON response: ${responseText}`);
+      }
     } catch (error) {
-        console.error('Error in createTokenMetadata:', error);
-        throw error;
+      console.error("Error in createTokenMetadata:", error);
+      throw error;
     }
-}
+  }
+
   //EVENTS
   addEventListener<T extends PumpFunEventType>(
     eventType: T,
