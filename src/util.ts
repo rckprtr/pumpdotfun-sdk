@@ -55,7 +55,8 @@ export async function sendTx(
 
   newTx.add(tx);
 
-  let versionedTx = await buildVersionedTx(connection, payer, newTx, commitment);
+  let { versionedTx, blockhash, lastValidBlockHeight } =
+    await buildVersionedTx(connection, payer, newTx, commitment);
   versionedTx.sign(signers);
 
   try {
@@ -64,7 +65,14 @@ export async function sendTx(
     });
     console.log("sig:", `https://solscan.io/tx/${sig}`);
 
-    let txResult = await getTxDetails(connection, sig, commitment, finality);
+    let txResult = await getTxDetails(
+      connection,
+      sig,
+      blockhash,
+      lastValidBlockHeight,
+      commitment,
+      finality
+    );
     if (!txResult) {
       return {
         success: false,
@@ -79,7 +87,7 @@ export async function sendTx(
   } catch (e) {
     if (e instanceof SendTransactionError) {
       let ste = e as SendTransactionError;
-      console.log("SendTransactionError" + await ste.getLogs(connection));
+      console.log("SendTransactionError", await ste.getLogs(connection));
     } else {
       console.error(e);
     }
@@ -95,30 +103,38 @@ export const buildVersionedTx = async (
   payer: PublicKey,
   tx: Transaction,
   commitment: Commitment = DEFAULT_COMMITMENT
-): Promise<VersionedTransaction> => {
-  const blockHash = (await connection.getLatestBlockhash(commitment))
-    .blockhash;
+): Promise<{
+  versionedTx: VersionedTransaction;
+  blockhash: string;
+  lastValidBlockHeight: number;
+}> => {
+  const latest = await connection.getLatestBlockhash(commitment);
 
   let messageV0 = new TransactionMessage({
     payerKey: payer,
-    recentBlockhash: blockHash,
+    recentBlockhash: latest.blockhash,
     instructions: tx.instructions,
   }).compileToV0Message();
 
-  return new VersionedTransaction(messageV0);
+  return {
+    versionedTx: new VersionedTransaction(messageV0),
+    blockhash: latest.blockhash,
+    lastValidBlockHeight: latest.lastValidBlockHeight,
+  };
 };
 
 export const getTxDetails = async (
   connection: Connection,
   sig: string,
+  blockhash: string,
+  lastValidBlockHeight: number,
   commitment: Commitment = DEFAULT_COMMITMENT,
   finality: Finality = DEFAULT_FINALITY
 ): Promise<VersionedTransactionResponse | null> => {
-  const latestBlockHash = await connection.getLatestBlockhash();
   await connection.confirmTransaction(
     {
-      blockhash: latestBlockHash.blockhash,
-      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      blockhash,
+      lastValidBlockHeight,
       signature: sig,
     },
     commitment

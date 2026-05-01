@@ -22,7 +22,7 @@
   "scripts": {
     "prepare": "npm run build",
     "test:builds": "npm run build && node --test ./__tests__/**/*.test.*js",
-    "build": "rimraf dist/ && rollup -c --bundleConfigAsCjs",
+    "build": "npx rimraf dist/ && rollup -c --bundleConfigAsCjs",
     "example": "tsx example/basic/index.ts"
   },
   "files": [

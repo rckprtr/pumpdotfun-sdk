@@ -382,7 +382,13 @@ export class PumpFunSDK {
       commitment
     );
 
-    return GlobalAccount.fromBuffer(tokenAccount!.data);
+    if (!tokenAccount) {
+      throw new Error(
+        `Global account not found at PDA ${globalAccountPDA.toBase58()}`
+      );
+    }
+
+    return GlobalAccount.fromBuffer(tokenAccount.data);
   }
 
   getBondingCurvePDA(mint: PublicKey) {
@@ -433,11 +439,24 @@ export class PumpFunSDK {
             throw new Error('Empty response received from server');
         }
 
+        let data: Record<string, unknown>;
         try {
-            return JSON.parse(responseText);
-        } catch (e) {
+            data = JSON.parse(responseText) as Record<string, unknown>;
+        } catch {
             throw new Error(`Invalid JSON response: ${responseText}`);
         }
+        const uri =
+            (typeof data.metadataUri === "string" && data.metadataUri) ||
+            (typeof data.metadata_uri === "string" && data.metadata_uri);
+        if (!uri) {
+            throw new Error(
+                `IPFS upload response missing metadataUri: ${responseText}`
+            );
+        }
+        return { ...data, metadataUri: uri } as {
+            metadataUri: string;
+            [key: string]: unknown;
+        };
     } catch (error) {
         console.error('Error in createTokenMetadata:', error);
         throw error;
