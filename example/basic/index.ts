@@ -2,11 +2,12 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { DEFAULT_DECIMALS, PumpFunSDK } from "../../src/index.js";
+import { PumpFunSDK } from "../../src/index.js";
 import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
 import {
   getOrCreateKeypair,
   getSPLBalance,
+  getSPLBalanceRaw,
   printSOLBalance,
   printSPLBalance,
 } from "../util.js";
@@ -123,12 +124,17 @@ const main = async () => {
       mint.publicKey,
       testAccount.publicKey
     );
+    const currentSPLBalanceRaw = await getSPLBalanceRaw(
+      connection,
+      mint.publicKey,
+      testAccount.publicKey
+    );
     console.log("currentSPLBalance", currentSPLBalance);
-    if (currentSPLBalance) {
+    if (currentSPLBalanceRaw && currentSPLBalanceRaw > 0n) {
       let sellResults = await sdk.sell(
         testAccount,
         mint.publicKey,
-        BigInt(currentSPLBalance * Math.pow(10, DEFAULT_DECIMALS)),
+        currentSPLBalanceRaw,
         SLIPPAGE_BASIS_POINTS,
         {
           unitLimit: 250000,

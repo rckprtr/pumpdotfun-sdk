@@ -60,6 +60,25 @@ export const getSPLBalance = async (
   return null;
 };
 
+/** Raw token smallest-unit balance (preferred for txs; avoids UI float rounding). */
+export const getSPLBalanceRaw = async (
+  connection: Connection,
+  mintAddress: PublicKey,
+  pubKey: PublicKey,
+  allowOffCurve: boolean = false
+): Promise<bigint | null> => {
+  try {
+    const ata = getAssociatedTokenAddressSync(
+      mintAddress,
+      pubKey,
+      allowOffCurve
+    );
+    const balance = await connection.getTokenAccountBalance(ata, "processed");
+    return BigInt(balance.value.amount);
+  } catch (e) {}
+  return null;
+};
+
 export const printSPLBalance = async (
   connection: Connection,
   mintAddress: PublicKey,
